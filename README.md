@@ -1,10 +1,8 @@
 # Dotfiles - Ambiente Dev Automatizado
 
-```badges
 ![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
 ![Neovim](https://img.shields.io/badge/NeoVim-%2357A143.svg?style=for-the-badge&logo=neovim&logoColor=white)
 ![Zsh](https://img.shields.io/badge/zsh-%2320232a.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
-```
 
 ```description
 Configuração completa de ambiente de desenvolvimento com apenas um comando.
