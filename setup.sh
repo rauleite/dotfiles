@@ -201,7 +201,7 @@ install_zsh_addons() {
   # Clona o tema powerlevel10k
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM}/themes/powerlevel10k" 2>/dev/null || \
     log_warn "Tema powerlevel10k já instalado ou erro ao clonar."
-  log_warn "É NECESSÁRIO configurar o tema em ~/.zshrc: ZSH_THEME=\"powerlevel10k/powerlevel10k\""
+  # log_warn "É NECESSÁRIO configurar o tema em ~/.zshrc: ZSH_THEME=\"powerlevel10k/powerlevel10k\""
 }
 
 install_neovim() {
