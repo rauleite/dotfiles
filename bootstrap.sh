@@ -9,7 +9,7 @@ sudo apt install -y python3-full
 
 # Verifica se pipx está instalado, senão instala
 if ! command -v pipx &> /dev/null; then
-    echo "pipx não encontrado. Instalando..."
+    echo "pipx não encontrado globalmente. Usanto virtual env..."
     python3 -m venv /tmp/pipx_venv
     /tmp/pipx_venv/bin/pip install pipx
     export PATH="$PATH:/tmp/pipx_venv/bin"
