@@ -179,12 +179,13 @@
         src: "{{ item.path }}"
         dest: "~/{{ item.path | basename }}"
         state: link
+        force: yes
       loop: "{{ zsh_files.files }}"
       when: "'.' not in item.path | basename and '..' not in item.path | basename"
 
     - name: Criar diretório de configuração do Neovim
       file:
-        path: "~/.config"
+        path: "~/.config/nvim"
         state: directory
     
     # - name: Remover diretório ~/.config/nvim (se existir)
@@ -204,6 +205,7 @@
         src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
         dest: "~/.tmux.conf"
         state: link
+        force: yes
 
     - name: Definir Zsh como shell padrão
       become: yes
