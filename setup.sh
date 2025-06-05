@@ -49,7 +49,7 @@ FONT_DIR="/usr/share/fonts"   # Diretório onde as fontes serão instaladas
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # Pacotes do sistema que serão instalados
-SYSTEM_PACKAGES=(build-essential zsh curl tmux git)
+SYSTEM_PACKAGES=(build-essential curl tmux git xclip fontconfig)
 
 #--------------------------------------------------------------------
 # Cores para log
@@ -93,6 +93,20 @@ check_sudo() {
   fi
 }
 
+# Se não estivermos no Zsh, instale-o e reinicie o script dentro dele.
+if [ -z "$ZSH_VERSION" ]; then
+    # Instala o Zsh (apenas se necessário)
+    check_sudo
+    sudo apt update && sudo apt install -y zsh
+    log_info "ZSH instalado."
+    # exec zsh -c "source $0"
+  
+    # Reinicia o mesmo script dentro do Zsh.
+    # Usamos ${BASH_SOURCE[0]} para garantir que o caminho do script esteja correto mesmo se
+    # essa parte do código estiver dentro de uma função.
+    exec zsh "${BASH_SOURCE[0]}" "$@"
+fi
+
 #--------------------------------------------------------------------
 # Funções de Instalação
 #--------------------------------------------------------------------
@@ -103,10 +117,22 @@ pre_checks() {
   check_command "$GIT_CMD"
 }
 
+# install_zsh() {
+#   check_sudo
+#   # sudo apt-get update -y
+#   log_info "Instalando zsh..."
+#   # sudo apt-get install -y zsh
+#   # log_info "ZSH instalados."
+#   # exec zsh -c "source $0"
+#   # exec zsh "$0"
+#   log_info "Executando do Shell do zsh."
+# }
+
 install_system_packages() {
   log_info "Instalando pacotes do sistema..."
   check_sudo
-  sudo apt-get update -y
+  # o zsh já está fazendo o update
+  # sudo apt-get update -y
   sudo apt-get install -y "${SYSTEM_PACKAGES[@]}"
   log_info "Pacotes de sistema instalados."
 }
@@ -123,22 +149,44 @@ install_oh_my_zsh() {
 }
 
 install_zsh_fonts() {
-  log_info "Instalando fontes do Powerlevel10k..."
   check_sudo
   sudo mkdir -p "${FONT_DIR}"
-  for file in "${!POWERLEVEL10K_FONTS[@]}"; do
+
+  # Itera sobre as chaves do array associativo usando a sintaxe zsh
+  for file in ${(k)POWERLEVEL10K_FONTS}; do
     url="${POWERLEVEL10K_FONTS[$file]}"
     log_info "Baixando fonte '${file}'..."
     sudo $CURL_CMD -fLo "${FONT_DIR}/${file}" "${url}"
   done
+
   log_info "Atualizando cache de fontes..."
   if command -v fc-cache &>/dev/null; then
     sudo fc-cache -fv "${FONT_DIR}"
   else
     log_warn "fc-cache não encontrado; atualize manualmente o cache de fontes se necessário."
   fi
+
   log_info "Fontes instaladas com sucesso em ${FONT_DIR}."
 }
+
+# install_zsh_fonts() {
+#   emulate bash
+#   shopt -s extglob  # Ativa as opções do Bash, se necessário  log_info "Instalando fontes do Powerlevel10k..."
+#   check_sudo
+#   sudo mkdir -p "${FONT_DIR}"
+#   for file in "${!POWERLEVEL10K_FONTS[@]}"; do
+#     url="${POWERLEVEL10K_FONTS[$file]}"
+#     log_info "Baixando fonte '${file}'..."
+#     sudo $CURL_CMD -fLo "${FONT_DIR}/${file}" "${url}"
+#   done
+#   log_info "Atualizando cache de fontes..."
+#   if command -v fc-cache &>/dev/null; then
+#     sudo fc-cache -fv "${FONT_DIR}"
+#   else
+#     log_warn "fc-cache não encontrado; atualize manualmente o cache de fontes se necessário."
+#   fi
+#   log_info "Fontes instaladas com sucesso em ${FONT_DIR}."
+# }
 
 install_zsh_addons() {
   log_info "Instalando addons para Zsh..."
@@ -254,6 +302,7 @@ configure_dotfiles() {
 main() {
   log_info "Iniciando o processo de instalação e configuração..."
   pre_checks
+  # install_zsh
   install_system_packages
   install_oh_my_zsh
   install_zsh_addons
