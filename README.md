@@ -21,11 +21,11 @@ dotfiles/
 
 Essa estrutura oferece modularidade, organização e fácil manutenção para suas configurações de ambiente. Aqui estão as principais vantagens:
 
-✅ Submódulos para projetos independentes (nvim/): Permite gerenciar a configuração do Neovim separadamente, facilitando atualizações sem interferir nos outros dotfiles.
+✅ Submódulos para projetos independentes `(nvim/)`: Permite gerenciar a configuração do Neovim separadamente, facilitando atualizações sem interferir nos outros dotfiles.
 
-✅ Separação clara por ferramenta (tmux/, zsh/): Cada configuração tem seu próprio diretório, tornando fácil modificar e versionar individualmente.
+✅ Separação clara por ferramenta `(tmux/, zsh/)`: Cada configuração tem seu próprio diretório, tornando fácil modificar e versionar individualmente.
 
-✅ Automação eficiente (bootstrap.sh, setup.yml): O script bootstrap.sh pode ser usado para instalações rápidas, enquanto setup.yml (Ansible) facilita configurações declarativas.
+✅ Automação eficiente `(bootstrap.sh, setup.yml)`: O script bootstrap.sh pode ser usado para instalações rápidas, enquanto setup.yml (Ansible) facilita configurações declarativas.
 
 ✅ Facilidade de backup e migração: Como tudo está versionado, você pode clonar o repositório e restaurar o ambiente em segundos.
 
@@ -81,9 +81,3 @@ Fontes não aparecendo
 | Ansible          | Automação de configurações         | [Ansible](https://docs.ansible.com) |
 | Fontes Meslo     | Fontes para terminal               | [Meslo Fonts](https://github.com/romkatv/powerlevel10k#fonts) |
 
-```>
-Para instalação manual:
-1. Use os links acima para baixar os componentes
-2. Siga as instruções oficiais de cada projeto
-3. Consulte o arquivo `setup.yml` para ver as versões recomendadas
-```
