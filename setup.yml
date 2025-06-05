@@ -182,11 +182,11 @@
       loop: "{{ zsh_files.files }}"
       when: "'.' not in item.path | basename and '..' not in item.path | basename"
 
-    # - name: Criar diretório de configuração do Neovim
-    #   file:
-    #     path: "~/.config/nvim"
-    #     state: directory
-    #
+    - name: Criar diretório de configuração do Neovim
+      file:
+        path: "~/.config"
+        state: directory
+    
     # - name: Remover diretório ~/.config/nvim (se existir)
     #   file:
     #     path: "{{ dotfiles_dir }}/nvim"
