@@ -70,24 +70,24 @@ Fontes não aparecendo
 2. Execute: fc-cache -fv
 ```
 
-## ```section Instalação Manual```
+## Instalação Manual (caso prefira ou precise)
 
 ```table
-| Componente       | Descrição                          | Link Oficial                                                                 |
-|------------------|------------------------------------|-----------------------------------------------------------------------------|
-| Zsh              | Shell avançado                     | [https://www.zsh.org](https://www.zsh.org)                                  |
-| Oh My Zsh        | Framework para Zsh                 | [https://ohmyz.sh](https://ohmyz.sh)                                       |
-| Powerlevel10k    | Tema para Zsh                      | [https://github.com/romkatv/powerlevel10k](https://github.com/romkatv/powerlevel10k) |
-| Neovim           | Editor moderno                     | [https://neovim.io](https://neovim.io)                                      |
-| Tmux             | Multiplexador de terminal          | [https://github.com/tmux/tmux](https://github.com/tmux/tmux)               |
-| Node.js (via NVM)| Runtime JavaScript                 | [https://github.com/nvm-sh/nvm](https://github.com/nvm-sh/nvm)              |
-| Ansible          | Automação de configurações         | [https://docs.ansible.com](https://docs.ansible.com)                        |
-| Fontes Meslo Nerd| Fontes para Powerlevel10k          | [https://github.com/romkatv/powerlevel10k#fonts](https://github.com/romkatv/powerlevel10k#fonts) |
+| Componente       | Descrição                          | Link Oficial |
+|------------------|------------------------------------|--------------|
+| Zsh              | Shell avançado                     | [Zsh Official](https://www.zsh.org) |
+| Oh My Zsh        | Framework para Zsh                 | [Oh My Zsh](https://ohmyz.sh) |
+| Powerlevel10k    | Tema para Zsh                      | [Powerlevel10k](https://github.com/romkatv/powerlevel10k) |
+| Neovim           | Editor moderno                     | [Neovim](https://neovim.io) |
+| Tmux             | Multiplexador de terminal          | [Tmux](https://github.com/tmux/tmux) |
+| Node.js (NVM)    | Runtime JavaScript                 | [NVM](https://github.com/nvm-sh/nvm) |
+| Ansible          | Automação de configurações         | [Ansible](https://docs.ansible.com) |
+| Fontes Meslo     | Fontes para terminal               | [Meslo Fonts](https://github.com/romkatv/powerlevel10k#fonts) |
 ```
 
-```note_installation
+```>
 Para instalação manual:
 1. Use os links acima para baixar os componentes
 2. Siga as instruções oficiais de cada projeto
-3. Consulte o arquivo ```file setup.yml``` para ver as versões recomendadas
+3. Consulte o arquivo `setup.yml` para ver as versões recomendadas
 ```
