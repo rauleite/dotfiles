@@ -50,6 +50,7 @@
         create: yes
 
     - name: Instalar pacotes do sistema
+      become: yes
       apt:
         name: "{{ system_packages }}"
         state: present
