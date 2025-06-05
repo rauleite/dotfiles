@@ -17,7 +17,9 @@ cd ~/dotfiles
 # Atualiza submódulos
 echo "🔄 Atualizando submódulos..."
 git submodule update --init --recursive
-
+git submodule update --remote --merge
+git submodule foreach git checkout main
+#
 # Executa o bootstrap
 echo "🚀 Executando configuração..."
 chmod +x bootstrap.sh
