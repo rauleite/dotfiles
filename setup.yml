@@ -197,6 +197,7 @@
         src: "{{ dotfiles_dir }}/nvim"
         dest: "~/.config/nvim"
         state: link
+        force: yes  # Permite substituir um arquivo/diretório existente pelo link
 
     - name: Linkar configuração do Tmux
       file:
