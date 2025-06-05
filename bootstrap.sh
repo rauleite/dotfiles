@@ -5,12 +5,18 @@ set -e
 
 echo "update e upgrade do sistema operacional..."
 sudo apt update && sudo apt upgrade -y
+sudo apt install -y python3-full
 
 # Verifica se pipx está instalado, senão instala
 if ! command -v pipx &> /dev/null; then
     echo "pipx não encontrado. Instalando..."
-    python3 -m pip install --user pipx
-    python3 -m pipx ensurepath
+    python3 -m venv /tmp/pipx_venv
+    /tmp/pipx_venv/bin/pip install pipx
+    export PATH="$PATH:/tmp/pipx_venv/bin"
+    pipx ensurepath
+    source ~/.bashrc
+    # python3 -m pip install --user pipx
+    # python3 -m pipx ensurepath
     echo "pipx instalado com sucesso!"
 else
     echo "pipx já está instalado."
