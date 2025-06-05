@@ -14,38 +14,28 @@
       "MesloLGS NF Italic.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
       "MesloLGS NF Bold Italic.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
     system_packages:
-      - build-essential
+      - build-essential # 'Make' para luasnip
       - curl
       - tmux
       - git
-      - xclip
-      - fontconfig
+      - xclip # para poder copiar para área de transfência do SO para o nvim e vice-versa
+      - fontconfig # pelo 'fc-cache'
       - zsh
 
   tasks:
     - name: Adicionar configuração ao ~/.profile
-      # ansible.builtin.blockinfile:
       ansible.builtin.lineinfile:
         path: ~/.profile
-        # marker: "# {mark} ANSIBLE MANAGED BLOCK"
         insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
         line: 'if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH"; fi'
-        # block: |
-        #   if [ -d "$HOME/.local/bin" ] ; then
-        #       PATH="$HOME/.local/bin:$PATH"
-        #   fi
         state: present
         create: yes
 
     - name: Adicionar source ~/.profile ao ~/.zprofile
-      # ansible.builtin.blockinfile:
       ansible.builtin.lineinfile:
         path: ~/.zprofile
-        # marker: "# {mark} ANSIBLE MANAGED BLOCK"
         insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
         line: "source ~/.profile"
-        # block: |
-        #   source ~/.profile
         state: present
         create: yes
 
@@ -54,8 +44,6 @@
       apt:
         name: "{{ system_packages }}"
         state: present
-        # update realizado pelo bootstrap.sh
-        # update_cache: yes
 
     - name: Verificar se Oh My Zsh já está instalado
       stat:
@@ -167,38 +155,31 @@
       register: node_install
       changed_when: "'Already installed' not in node_install.stdout"
 
-    - name: Configurar dotfiles do Zsh
-      find:
-        paths: "{{ dotfiles_dir }}/zsh"
-        hidden: yes
-        file_type: file
-      register: zsh_files
-
-    - name: Criar links para arquivos do Zsh
+    - name: Linkar .p10k
       file:
-        src: "{{ item.path }}"
-        dest: "~/{{ item.path | basename }}"
+        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
+        dest: "~/.p10k.zsh"
         state: link
         force: yes
-      loop: "{{ zsh_files.files }}"
-      when: "'.' not in item.path | basename and '..' not in item.path | basename"
+
+    - name: Linkar .zshrc
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.zshrc"
+        dest: "~/.zshrc"
+        state: link
+        force: yes
 
     - name: Criar diretório de configuração do Neovim
       file:
         path: "~/.config/nvim"
         state: directory
-    
-    # - name: Remover diretório ~/.config/nvim (se existir)
-    #   file:
-    #     path: "{{ dotfiles_dir }}/nvim"
-    #     state: absent
 
     - name: Linkar configuração do Neovim
       file:
         src: "{{ dotfiles_dir }}/nvim"
         dest: "~/.config/nvim"
         state: link
-        force: yes  # Permite substituir um arquivo/diretório existente pelo link
+        force: yes # Permite substituir um arquivo/diretório existente pelo link
 
     - name: Linkar configuração do Tmux
       file:
