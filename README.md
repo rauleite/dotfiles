@@ -52,7 +52,6 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 
 ## Componentes Instalados
 
-```table
 | Ferramenta       | Descrição                          |
 |------------------|------------------------------------|
 | Zsh + Plugins    | Shell avançado com autocompletar   |
@@ -60,7 +59,6 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 | Tmux             | Multiplexador de terminal          |
 | Node.js (LTS)    | Runtime JavaScript via NVM         |
 | Powerlevel10k    | Tema Zsh com fontes personalizadas |
-```
 
 ## Troubleshooting
 
@@ -72,7 +70,6 @@ Fontes não aparecendo
 
 ## Instalação Manual (caso prefira ou precise)
 
-```table
 | Componente       | Descrição                          | Link Oficial |
 |------------------|------------------------------------|--------------|
 | Zsh              | Shell avançado                     | [Zsh Official](https://www.zsh.org) |
@@ -83,7 +80,6 @@ Fontes não aparecendo
 | Node.js (NVM)    | Runtime JavaScript                 | [NVM](https://github.com/nvm-sh/nvm) |
 | Ansible          | Automação de configurações         | [Ansible](https://docs.ansible.com) |
 | Fontes Meslo     | Fontes para terminal               | [Meslo Fonts](https://github.com/romkatv/powerlevel10k#fonts) |
-```
 
 ```>
 Para instalação manual:
