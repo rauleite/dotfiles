@@ -34,7 +34,7 @@ DOTFILES_DIR="$HOME/dotfiles"
 ZSH_DOTFILES_DIR="${DOTFILES_DIR}/zsh"
 NVIM_DOTFILES_DIR="${DOTFILES_DIR}/nvim"
 TMUX_DOTFILES_DIR="${DOTFILES_DIR}/tmux"
-NETPLAN_DOTFILES_DIR="${DOTFILES_DIR}/netplan"
+# NETPLAN_DOTFILES_DIR="${DOTFILES_DIR}/netplan"
 
 # URLs para fontes do Powerlevel10k (para o Zsh)
 declare -A POWERLEVEL10K_FONTS=(
@@ -237,10 +237,10 @@ configure_dotfiles() {
   log_info "Configuração do Neovim linkada para $HOME/.config/nvim"
 
   # Netplan: Cria link para o arquivo de configuração (necessita de privilégios sudo)
-  log_info "Linkando configuração do Netplan..."
-  check_sudo
-  sudo ln -sf "${NETPLAN_DOTFILES_DIR}/01-network-manager-all.yaml" "/etc/netplan/01-network-manager-all.yaml"
-  log_warn "É NECESSÁRIO confirmar/ajustar o IP em /etc/netplan/01-network-manager-all.yaml"
+#  log_info "Linkando configuração do Netplan..."
+#  check_sudo
+#  sudo ln -sf "${NETPLAN_DOTFILES_DIR}/01-network-manager-all.yaml" "/etc/netplan/01-network-manager-all.yaml"
+#  log_warn "É NECESSÁRIO confirmar/ajustar o IP em /etc/netplan/01-network-manager-all.yaml"
 
   # Tmux: Cria link para o arquivo de configuração do Tmux
   log_info "Linkando configuração do Tmux..."
