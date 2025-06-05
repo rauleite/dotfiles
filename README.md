@@ -1,16 +1,16 @@
-# ```Dotfiles - Ambiente Dev Automatizado```
+# Dotfiles - Ambiente Dev Automatizado
 
 ```badges
-[![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)]
-[![Neovim](https://img.shields.io/badge/NeoVim-%2357A143.svg?style=for-the-badge&logo=neovim&logoColor=white)]
-[![Zsh](https://img.shields.io/badge/zsh-%2320232a.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)]
+![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
+![Neovim](https://img.shields.io/badge/NeoVim-%2357A143.svg?style=for-the-badge&logo=neovim&logoColor=white)
+![Zsh](https://img.shields.io/badge/zsh-%2320232a.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
 ```
 
 ```description
 Configuração completa de ambiente de desenvolvimento com apenas um comando.
 ```
 
-## ```section Estrutura do Projeto```
+## section Estrutura do Projeto
 
 ```structure
 dotfiles/
@@ -21,7 +21,7 @@ dotfiles/
 └── setup.yml      # Receita Ansible
 ```
 
-## ```section Instalação Rápida```
+## section Instalação Rápida
 
 ```bash
 # Clone o repositório principal
@@ -40,7 +40,7 @@ chmod +x bootstrap.sh
 Todas as configurações podem ser editadas após instalação nos respectivos diretórios.
 ```
 
-## ```section Componentes Instalados```
+## section Componentes Instalados
 
 ```table
 | Ferramenta       | Descrição                          |
@@ -52,9 +52,10 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 | Powerlevel10k    | Tema Zsh com fontes personalizadas |
 ```
 
-## ```section Troubleshooting```
+## section Troubleshooting
 
-```issue Fontes não aparecendo
+```issue 
+Fontes não aparecendo
 1. Verifique se as fontes estão em /usr/share/fonts
 2. Execute: fc-cache -fv
 ```
