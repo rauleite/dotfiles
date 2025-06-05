@@ -1,0 +1,205 @@
+---
+- name: Configurar ambiente de desenvolvimento
+  hosts: localhost
+  connection: local
+  # become: yes
+  vars:
+    nvm_version: "v0.40.3"
+    neovim_version: "v0.11.2"
+    dotfiles_dir: "{{ ansible_user_dir }}/dotfiles"
+    font_dir: "/usr/share/fonts"
+    powerlevel10k_fonts:
+      "MesloLGS NF Regular.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
+      "MesloLGS NF Bold.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
+      "MesloLGS NF Italic.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf"
+      "MesloLGS NF Bold Italic.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf"
+    system_packages:
+      - build-essential
+      - curl
+      - tmux
+      - git
+      - xclip
+      - fontconfig
+      - zsh
+
+  tasks:
+    - name: Adicionar configuração ao ~/.profile
+      # ansible.builtin.blockinfile:
+      ansible.builtin.lineinfile:
+        path: ~/.profile
+        # marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
+        line: 'if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH"; fi'
+        # block: |
+        #   if [ -d "$HOME/.local/bin" ] ; then
+        #       PATH="$HOME/.local/bin:$PATH"
+        #   fi
+        state: present
+        create: yes
+
+    - name: Adicionar source ~/.profile ao ~/.zprofile
+      # ansible.builtin.blockinfile:
+      ansible.builtin.lineinfile:
+        path: ~/.zprofile
+        # marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
+        line: "source ~/.profile"
+        # block: |
+        #   source ~/.profile
+        state: present
+        create: yes
+
+    - name: Instalar pacotes do sistema
+      apt:
+        name: "{{ system_packages }}"
+        state: present
+        # update realizado pelo bootstrap.sh
+        # update_cache: yes
+
+    - name: Verificar se Oh My Zsh já está instalado
+      stat:
+        path: "~/.oh-my-zsh"
+      register: omz_installed
+
+    - name: Instalar Oh My Zsh
+      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      when: not omz_installed.stat.exists
+      args:
+        executable: /bin/zsh
+
+    - name: Criar diretório de fontes
+      file:
+        path: "{{ font_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Verificar se as fontes já estão instaladas
+      stat:
+        path: "{{ font_dir }}/{{ item.key }}"
+      loop: "{{ powerlevel10k_fonts | dict2items }}"
+      register: fonts_exist
+
+    - name: Baixar e instalar fontes do Powerlevel10k
+      become: yes
+      loop: "{{ powerlevel10k_fonts | dict2items }}"
+      get_url:
+        url: "{{ item.value }}"
+        dest: "{{ font_dir }}/{{ item.key }}"
+        mode: "0644"
+      when: not (fonts_exist.results | selectattr('item.key', 'equalto', item.key) | map(attribute='stat.exists') | first | default(False))
+
+    - name: Atualizar cache de fontes
+      command: fc-cache -fv "{{ font_dir }}"
+
+    - name: Instalar plugins do Zsh
+      block:
+        - name: Clonar zsh-autosuggestions
+          git:
+            repo: https://github.com/zsh-users/zsh-autosuggestions
+            dest: "~/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+            force: no
+
+        - name: Clonar zsh-syntax-highlighting
+          git:
+            repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+            dest: "~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+            force: no
+
+        - name: Clonar tema powerlevel10k
+          git:
+            repo: https://github.com/romkatv/powerlevel10k.git
+            dest: "~/.oh-my-zsh/custom/themes/powerlevel10k"
+            depth: 1
+            force: no
+
+    - name: Baixar Neovim
+      get_url:
+        url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-x86_64.tar.gz"
+        dest: "/tmp/nvim-linux-x86_64.tar.gz"
+        mode: "0644"
+
+    - name: Extrair Neovim
+      unarchive:
+        src: "/tmp/nvim-linux-x86_64.tar.gz"
+        dest: "/tmp"
+        remote_src: yes
+
+    - name: Remover instalação anterior do Neovim
+      become: yes
+      file:
+        path: "/usr/local/nvim"
+        state: absent
+
+    - name: Mover Neovim para diretório de instalação
+      become: yes
+      command: mv /tmp/nvim-linux-x86_64 /usr/local/nvim
+      args:
+        creates: /usr/local/nvim
+
+    - name: Criar link simbólico para o Neovim
+      become: yes
+      file:
+        src: "/usr/local/nvim/bin/nvim"
+        dest: "/usr/local/bin/nvim"
+        state: link
+        force: yes
+
+    - name: Remover arquivo baixado do Neovim
+      become: yes
+      file:
+        path: "/tmp/nvim-linux-x86_64.tar.gz"
+        state: absent
+
+    - name: Instalar NVM
+      shell: curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh" | bash
+      args:
+        executable: /bin/zsh
+
+    - name: Carregar NVM e instalar Node.js LTS
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm install --lts
+        node --version
+        npm --version
+      args:
+        executable: /bin/zsh
+      register: node_install
+      changed_when: "'Already installed' not in node_install.stdout"
+
+    - name: Configurar dotfiles do Zsh
+      find:
+        paths: "{{ dotfiles_dir }}/zsh"
+        hidden: yes
+        file_type: file
+      register: zsh_files
+
+    - name: Criar links para arquivos do Zsh
+      file:
+        src: "{{ item.path }}"
+        dest: "~/{{ item.path | basename }}"
+        state: link
+      loop: "{{ zsh_files.files }}"
+      when: "'.' not in item.path | basename and '..' not in item.path | basename"
+
+    - name: Criar diretório de configuração do Neovim
+      file:
+        path: "~/.config/nvim"
+        state: directory
+
+    - name: Linkar configuração do Neovim
+      file:
+        src: "{{ dotfiles_dir }}/nvim"
+        dest: "~/.config/nvim"
+        state: link
+
+    - name: Linkar configuração do Tmux
+      file:
+        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+        dest: "~/.tmux.conf"
+        state: link
+
+    - name: Definir Zsh como shell padrão
+      become: yes
+      user:
+        name: "{{ ansible_user_id }}"
+        shell: /bin/zsh
