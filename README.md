@@ -6,6 +6,7 @@
 ![Zsh](https://img.shields.io/badge/zsh-%2320232a.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
 
 Configuração completa de ambiente de desenvolvimento com apenas um comando.
+*Embora seja um mero bootstrap pós instalação do SO, ele é baseado em meus requisitos essenciais míminos, portanto, é opnativo, sendo o SO o Ubuntu e suas ferramentas que considero básicas.*
 
 ## Estrutura do Projeto
 
@@ -30,7 +31,14 @@ Essa estrutura oferece modularidade, organização e fácil manutenção para su
 
 Isso torna o fluxo de trabalho mais organizado, portátil e escalável 🚀😃 
 
-## Instalação Rápida
+## Instalação
+
+### Instalação rápida
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rauleite/dotfiles/main/install.sh | bash
+```
+### Instalação a partir do repositório
 
 ```bash
 # Clone o repositório principal
