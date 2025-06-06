@@ -15,8 +15,6 @@ if ! command -v pipx &> /dev/null; then
     export PATH="$PATH:/tmp/pipx_venv/bin"
     pipx ensurepath
     source ~/.bashrc
-    # python3 -m pip install --user pipx
-    # python3 -m pipx ensurepath
     echo "pipx instalado com sucesso!"
 else
     echo "pipx já está instalado."
@@ -43,7 +41,11 @@ else
     echo "Ansible está funcionando corretamente."
     ansible-playbook --version
 fi
-whoami
-ansible-playbook -vv setup.yml
+
+ansible-playbook -v setup.yml
+
+zsh -c "source ~/.zshrc && p10k configure"
+
+sudo apt autoremove -y
 
 echo "Configuração concluída! 🚀"
