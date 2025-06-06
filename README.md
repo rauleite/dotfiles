@@ -7,7 +7,7 @@
 
 Configuração completa de ambiente de desenvolvimento com apenas um comando.
 
-*Embora seja um mero bootstrap pós instalação do SO, ele é baseado em meus requisitos essenciais míminos, portanto, é opnativo, sendo o SO o Ubuntu e suas ferramentas que considero básicas.*
+*Embora seja um mero bootstrap pós-instalação do SO, ele é baseado em meus requisitos essenciais míminos, portanto, é opnativo, sendo o SO o Ubuntu e suas ferramentas que considero básicas.*
 
 ## Estrutura do Projeto
 
@@ -68,9 +68,17 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 
 ## Troubleshooting
 
-Fontes não aparecendo
+### Fontes não aparecendo
 1. Verifique se as fontes estão em /usr/share/fonts
 2. Execute: fc-cache -fv
+
+### Problemas com lsp do neovim / node e npm não executáveis através do shell do zsh, apenas pelo bash
+
+O [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install) faz uma [bagucinha quando encontra bash e zsh](https://github.com/nvm-sh/nvm?tab=readme-ov-file#troubleshooting-on-macos) no mesmo ambiente.
+
+1. recorte (copie e delete) o bloco do zsh presente no final do arquivo `~/.bashrc`
+2. copie esta referência (do .bashrc) no seu `~/.profile`
+3. delete o bloco presente no `~/.zshrc`
 
 ## Instalação Manual (caso prefira ou precise)
 
