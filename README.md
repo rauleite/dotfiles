@@ -66,6 +66,8 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 | Node.js (LTS)    | Runtime JavaScript via NVM         |
 | Powerlevel10k    | Tema Zsh com fontes personalizadas |
 
+## Informações
+
 ### Arquivos do diretório `~/dotfiles`
 Neste arquivo residem os arquivos de configuração linkados aos seus respectivos paths corretos.
 
@@ -82,7 +84,7 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 - o `~/.profile` é o local ideal para você incluir as configurações **tanto do bash, quanto do *zsh***.
 - o `~/.bashrc` continua sendo específico para *bash*, e o `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
 
-### Algum arquivo ou link foi apagado [ou quebrado] acidentalmente do `~/dotfiles/`
+### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
 - Calma, eles estão, idealmente, sincronizados no Github. Essa é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
 
 ## Troubleshooting
