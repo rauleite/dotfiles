@@ -6,6 +6,7 @@
 ![Zsh](https://img.shields.io/badge/zsh-%2320232a.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
 
 Configuração completa de ambiente de desenvolvimento com apenas um comando.
+
 *Embora seja um mero bootstrap pós instalação do SO, ele é baseado em meus requisitos essenciais míminos, portanto, é opnativo, sendo o SO o Ubuntu e suas ferramentas que considero básicas.*
 
 ## Estrutura do Projeto
