@@ -23,6 +23,7 @@ git submodule foreach git checkout main
 # Executa o bootstrap
 echo "🚀 Executando configuração..."
 chmod +x bootstrap.sh
-./bootstrap.sh
+# ./bootstrap.sh
+exec bash -i -c "./bootstrap.sh"
 
 echo "✅ Instalação concluída com sucesso!"

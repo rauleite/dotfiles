@@ -1,0 +1,22 @@
+Script started on 2025-06-06 00:35:12+00:00 [COMMAND="zsh -i -c 'p10k configure'" TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="157" LINES="46"]
+[?1049h[22;0;0t[?25l[H[2J[3J    This is [34mPowerlevel10k configuration wizard[39m. It will ask you a few questions and
+                                 configure your prompt.
+
+                    [1mDoes this look like a[0m [32mdiamond[39m [1m(rotated square)?[0m
+                      reference: https://graphemica.com/%E2%97%86
+
+                                     --->    <---
+
+[1m(y)  Yes.[0m
+
+[1m(n)  No.[0m
+
+(q)  Quit and do nothing.
+
+[1mChoice [ynq]: [0m[?25h[?1049l[23;0;0t
+Powerlevel10k configuration wizard has been aborted. To run it again, type:
+
+  [32mp10k[39m [1mconfigure[0m
+
+[?25h
+Script done on 2025-06-06 00:35:18+00:00 [COMMAND_EXIT_CODE="1"]
