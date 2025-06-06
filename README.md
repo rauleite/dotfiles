@@ -85,7 +85,7 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 - o `~/.bashrc` continua sendo específico para *bash*, e o `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
 
 ### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
-- Calma, eles estão, idealmente, sincronizados no Github. Essa é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
+- Calma, eles estão, idealmente, sincronizados no Github. Esse é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
 
 ## Troubleshooting
 
