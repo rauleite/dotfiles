@@ -54,4 +54,4 @@ echo "Configuração concluída! 🚀"
 echo "Execute 'p10k configure' para configurar o Powerlevel10k."
 
 # Inicia o Zsh de forma interativa
-exec zsh
+exec zsh -i
