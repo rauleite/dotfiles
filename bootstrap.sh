@@ -44,12 +44,14 @@ fi
 
 ansible-playbook -v setup.yml
 
-script -q -c "zsh -i -c 'p10k configure'"
-
+# script -q -c "zsh -i -c 'p10k configure'"
 # zsh -i -c "source ~/.zshrc && p10k configure"
 
 sudo apt autoremove -y
 
-zsh
-
 echo "Configuração concluída! 🚀"
+
+echo "Execute 'p10k configure' para configurar o Powerlevel10k."
+
+# Inicia o Zsh de forma interativa
+exec zsh
