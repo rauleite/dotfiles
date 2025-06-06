@@ -44,7 +44,10 @@ fi
 
 ansible-playbook -v setup.yml
 
-zsh -i -c "source ~/.zshrc && p10k configure"
+exec zsh -i
+p10k configure
+
+# zsh -i -c "source ~/.zshrc && p10k configure"
 
 sudo apt autoremove -y
 
