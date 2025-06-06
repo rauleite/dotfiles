@@ -188,6 +188,37 @@
         state: link
         force: yes
 
+    # INSTALL TMUX PLUGINS ------------------------------
+    - name: Clonar o repositório TPM
+      git:
+        repo: https://github.com/tmux-plugins/tpm.git
+        dest: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+        version: master
+      tags:
+        - tmux_conf
+
+    - name: Iniciar o servidor tmux (caso não esteja ativo)
+      command: tmux start-server
+      ignore_errors: yes
+      tags:
+        - tmux_conf
+
+    - name: Criar uma sessão tmux detached para instalação do TPM
+      command: tmux new-session -d -s tpm_install
+      tags:
+        - tmux_conf
+
+    - name: Executar o script de instalação dos plugins do TPM
+      command: tmux run-shell "~/.tmux/plugins/tpm/scripts/install_plugins.sh"
+      tags:
+        - tmux_conf
+
+    - name: Encerrar a sessão usada para a instalação
+      command: tmux kill-session -t tpm_install
+      tags:
+        - tmux_conf
+    # ------------------------------------------------------
+
     - name: Definir Zsh como shell padrão
       become: yes
       user:

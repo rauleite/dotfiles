@@ -68,6 +68,10 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 
 ## Informações
 
+Executará somente tasks *relacionadas* às instalações de plugins e configurações do tmux
+
+*No entanto, todas as tasks, sem exceção já são executadas durante a instação geral*
+
 ### Arquivos do diretório `~/dotfiles`
 Neste arquivo residem os arquivos de configuração linkados aos seus respectivos paths corretos.
 
@@ -87,6 +91,14 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 ### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
 - Calma, eles estão, idealmente, sincronizados no Github. Esse é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
 
+### Instalações e configurações sob demanda
+
+Algumas *tasks* do `setup.yml` estão com *tags*, permitindo que sejam apenas elas executadas, caso você precise por algum motivo. Como por exemplo:
+
+```bash
+ansible-playbook setup.yml --tags tmux_conf
+
+```
 ## Troubleshooting
 
 ### Fontes não aparecendo
