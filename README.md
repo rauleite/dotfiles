@@ -66,18 +66,37 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 | Node.js (LTS)    | Runtime JavaScript via NVM         |
 | Powerlevel10k    | Tema Zsh com fontes personalizadas |
 
+### Arquivos do diretório `~/dotfiles`
+Neste arquivo residem os arquivos de configuração linkados aos seus respectivos paths corretos.
+
+Lembre que, por serem links, suas modificações podem ser feita de maneira bidirecional (origem ou destino do link). Mas opte por trabalhar como faria normalmente, fazendo modificações dentro de seus paths 'naturais', que são os **destinos** dos links:
+
+| **Origem**                       | **Destino \[x\]**               | **Descrição**                  |
+|----------------------------------|---------------------------|--------------------------------|
+| `~/dotfiles/zsh/.p10k.zsh`       | `~/.p10k.zsh`             | Configuração do Powerlevel10k  |
+| `~/dotfiles/zsh/.zshrc`          | `~/.zshrc`                | Arquivo de configuração do Zsh |
+| `~/dotfiles/nvim`                | `~/.config/nvim`          | Configuração do Neovim         |
+| `~/dotfiles/tmux/.tmux.conf`     | `~/.tmux.conf`            | Configuração do Tmux           |
+
+### shell e variáveis de ambiente
+- o `~/.profile` é o local ideal para você incluir as configurações **tanto do bash, quanto do *zsh***.
+- o `~/.bashrc` continua sendo específico para *bash*, e o `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
+
+### Algum arquivo ou link foi apagado [ou quebrado] acidentalmente do `~/dotfiles/`
+- Calma, eles estão, idealmente, sincronizados no Github. Essa é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
+
 ## Troubleshooting
 
 ### Fontes não aparecendo
 1. Verifique se as fontes estão em /usr/share/fonts
 2. Execute: fc-cache -fv
 
-### Problemas com lsp do neovim / node e npm não executáveis através do shell do zsh, apenas pelo bash
+### Problemas com lsp do neovim ou node e npm não executáveis através do shell do zsh, apenas pelo bash
 
-O [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install) faz uma [bagucinha quando encontra bash e zsh](https://github.com/nvm-sh/nvm?tab=readme-ov-file#troubleshooting-on-macos) no mesmo ambiente.
+O [NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install) faz uma [bagucinha quando encontra bash e zsh](https://github.com/nvm-sh/nvm?tab=readme-ov-file#troubleshooting-on-macos) no mesmo ambiente.
 
-1. recorte (copie e delete) o bloco do zsh presente no final do arquivo `~/.bashrc`
-2. copie esta referência (do .bashrc) no seu `~/.profile`
+1. recorte (copie e delete) o bloco do NVM presente no final do arquivo `~/.bashrc`
+2. copie esta referência (do ~/.bashrc) no seu `~/.profile`
 3. delete o bloco presente no `~/.zshrc`
 
 ## Instalação Manual (caso prefira ou precise)
