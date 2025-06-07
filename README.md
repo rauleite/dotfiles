@@ -81,14 +81,10 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 | `~/dotfiles/nvim`                | `~/.config/nvim`          | Configuração do Neovim         |
 | `~/dotfiles/tmux/.tmux.conf`     | `~/.tmux.conf`            | Configuração do Tmux           |
 
-### shell e variáveis de ambiente
+### Shell e variáveis de ambiente
 
 - o `~/.profile` é o local ideal para você incluir as configurações **tanto do bash, quanto do *zsh***.
 - o `~/.bashrc` continua sendo específico para *bash*, e o `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
-
-### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
-
-- Calma, eles estão, idealmente, sincronizados no Github. Esse é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
 
 ### Instalações e configurações sob demanda
 
@@ -101,7 +97,7 @@ Este comando do exemplo executará somente tasks *relacionadas* às instalaçõe
 
 <a name="instalacao-neovim"></a>
 
-#### Instalação (e atualização) do binário do neovim 
+#### Instalação (e atualização) do binário do Neovim (obs.: versão LTS, sempre)
 
 Em `setup.yml` altere para a var *nvm_version* desejada (como por ex. *nvm_version: "v0.40.3"*) e execute:
 
@@ -135,15 +131,14 @@ pipx upgrade nome_do_pacote
 pipx upgrade-all
 ```
 
-#### Atualizando o binário do Neovim (obs.: versão LTS, sempre)
+#### Atualizando o binário do Neovim 
 
 [Seção de instalação e atualização do Neovim](#instalacao-neovim)
-
-
 
 ## Troubleshooting
 
 ### Fontes não aparecendo
+
 1. Verifique se as fontes estão em /usr/share/fonts
 2. Execute: fc-cache -fv
 
@@ -154,6 +149,10 @@ O [NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install) faz uma
 1. recorte (copie e delete) o bloco do NVM presente no final do arquivo `~/.bashrc`
 2. copie esta referência (do ~/.bashrc) no seu `~/.profile`
 3. delete o bloco presente no `~/.zshrc`
+
+### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
+
+- Calma, eles estão, idealmente, sincronizados no Github. Esse é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
 
 ## Instalação Manual (caso prefira ou precise)
 
