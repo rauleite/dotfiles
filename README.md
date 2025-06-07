@@ -99,7 +99,11 @@ ansible-playbook setup.yml --tags tmux_conf
 ```
 Este comando do exemplo executará somente tasks *relacionadas* às instalações de plugins e configurações do tmux
 
-#### Instalação do binário do neovim (em `setup.yml` altere para a var *nvm_version* desejada, como por ex. *nvm_version: "v0.40.3"*) e execute:
+<a name="instalacao-neovim"></a>
+
+#### Instalação (e atualização) do binário do neovim 
+
+Em `setup.yml` altere para a var *nvm_version* desejada (como por ex. *nvm_version: "v0.40.3"*) e execute:
 
 ```bash
 ansible-playbook setup.yml --tags neovim_bin
@@ -130,6 +134,12 @@ pipx upgrade nome_do_pacote
 # atualização de todos
 pipx upgrade-all
 ```
+
+#### Atualizando o binário do Neovim (obs.: versão LTS, sempre)
+
+[Seção de instalação e atualização do Neovim](#instalacao-neovim)
+
+
 
 ## Troubleshooting
 
