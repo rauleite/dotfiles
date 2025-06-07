@@ -46,6 +46,7 @@
         state: present
 
     # Instalando piplexed, atualizador de pacotes instalados via pipx ---
+
     - name: Obter a lista de pacotes instalados via pipx
       shell: pipx list --short
       register: pipx_list
@@ -53,11 +54,28 @@
       tags:
         - pipx_packages
 
-    - name: Instalar piplexed via pipx, se não estiver instalado
-      shell: pipx install piplexed
-      when: "'piplexed' not in pipx_list.stdout"
+    - name: Instalar pacotes pipx se não estiverem instalados
+      shell: pipx install {{ item }}
+      loop:
+        - piplexed
+        - tmuxp
+      when: item not in pipx_list.stdout
       tags:
         - pipx_packages
+
+    # - name: Obter a lista de pacotes instalados via pipx
+    #   shell: pipx list --short
+    #   register: pipx_list
+    #   changed_when: false
+    #   tags:
+    #     - pipx_packages
+    #
+    # - name: Instalar piplexed via pipx, se não estiver instalado
+    #   shell: pipx install piplexed
+    #   when: "'piplexed' not in pipx_list.stdout"
+    #   tags:
+    #     - pipx_packages
+
     # --------------------------------------------------------------------
 
     - name: Verificar se Oh My Zsh já está instalado
