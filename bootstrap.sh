@@ -5,7 +5,8 @@ set -e
 
 echo "update e upgrade do sistema operacional..."
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y python3-full
+# sudo apt install -y python3-full
+sudo apt install -y python3 python3-venv python3-pip
 
 # Verifica se pipx está instalado, senão instala
 if ! command -v pipx &> /dev/null; then
@@ -26,7 +27,8 @@ export PATH="$HOME/.local/bin:$PATH"
 # Verifica se ansible já está instalado via pipx
 if ! pipx list | grep -q "ansible"; then
     echo "Instalando Ansible via pipx..."
-    pipx install --include-deps ansible
+    # pipx install --include-deps ansible
+    pipx install --include-deps ansible-core
     echo "Ansible instalado com sucesso!"
 else
     echo "Ansible já está instalado."
