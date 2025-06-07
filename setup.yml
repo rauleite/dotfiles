@@ -45,6 +45,21 @@
         name: "{{ system_packages }}"
         state: present
 
+    # Instalando piplexed, atualizador de pacotes instalados via pipx ---
+    - name: Obter a lista de pacotes instalados via pipx
+      shell: pipx list --short
+      register: pipx_list
+      changed_when: false
+      tags:
+        - pipx_packages
+
+    - name: Instalar piplexed via pipx, se não estiver instalado
+      shell: pipx install piplexed
+      when: "'piplexed' not in pipx_list.stdout"
+      tags:
+        - pipx_packages
+    # --------------------------------------------------------------------
+
     - name: Verificar se Oh My Zsh já está instalado
       stat:
         path: "~/.oh-my-zsh"
@@ -98,32 +113,41 @@
           git:
             repo: https://github.com/romkatv/powerlevel10k.git
             dest: "~/.oh-my-zsh/custom/themes/powerlevel10k"
-            depth: 1
+            depth: 0
             force: no
 
+    # Instalar binário do neovim -----------------
     - name: Baixar Neovim
       get_url:
         url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-x86_64.tar.gz"
         dest: "/tmp/nvim-linux-x86_64.tar.gz"
         mode: "0644"
+      tags:
+        - neovim_bin
 
     - name: Extrair Neovim
       unarchive:
         src: "/tmp/nvim-linux-x86_64.tar.gz"
         dest: "/tmp"
         remote_src: yes
+      tags:
+        - neovim_bin
 
     - name: Remover instalação anterior do Neovim
       become: yes
       file:
         path: "/usr/local/nvim"
         state: absent
+      tags:
+        - neovim_bin
 
     - name: Mover Neovim para diretório de instalação
       become: yes
       command: mv /tmp/nvim-linux-x86_64 /usr/local/nvim
       args:
         creates: /usr/local/nvim
+      tags:
+        - neovim_bin
 
     - name: Criar link simbólico para o Neovim
       become: yes
@@ -132,12 +156,17 @@
         dest: "/usr/local/bin/nvim"
         state: link
         force: yes
+      tags:
+        - neovim_bin
 
     - name: Remover arquivo baixado do Neovim
       become: yes
       file:
         path: "/tmp/nvim-linux-x86_64.tar.gz"
         state: absent
+      tags:
+        - neovim_bin
+    # -----------------------------------------
 
     - name: Instalar NVM
       shell: curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh" | bash

@@ -68,11 +68,8 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 
 ## Informações
 
-Executará somente tasks *relacionadas* às instalações de plugins e configurações do tmux
-
-*No entanto, todas as tasks, sem exceção já são executadas durante a instação geral*
-
 ### Arquivos do diretório `~/dotfiles`
+
 Neste arquivo residem os arquivos de configuração linkados aos seus respectivos paths corretos.
 
 Lembre que, por serem links, suas modificações podem ser feita de maneira bidirecional (origem ou destino do link). Mas opte por trabalhar como faria normalmente, fazendo modificações dentro de seus paths 'naturais', que são os **destinos** dos links:
@@ -85,10 +82,12 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 | `~/dotfiles/tmux/.tmux.conf`     | `~/.tmux.conf`            | Configuração do Tmux           |
 
 ### shell e variáveis de ambiente
+
 - o `~/.profile` é o local ideal para você incluir as configurações **tanto do bash, quanto do *zsh***.
 - o `~/.bashrc` continua sendo específico para *bash*, e o `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
 
 ### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
+
 - Calma, eles estão, idealmente, sincronizados no Github. Esse é todo o espírito da coisa. Provavelmente bastará dar um `git pull` e/ou re-linkar, ou algo equivalente. Na dúvida, peça ajuda.
 
 ### Instalações e configurações sob demanda
@@ -97,8 +96,35 @@ Algumas *tasks* do `setup.yml` estão com *tags*, permitindo que sejam apenas el
 
 ```bash
 ansible-playbook setup.yml --tags tmux_conf
-
 ```
+Este comando do exemplo executará somente tasks *relacionadas* às instalações de plugins e configurações do tmux
+
+Instalação do binário do neovim (em `setup.yml` altere para a var *nvm_version* desejada, como por ex. *nvm_version: "v0.40.3"*) e execute:
+
+```bash
+ansible-playbook setup.yml --tags neovim_bin
+```
+
+*No entanto, todas as tasks (com ou sem *tags*) já são executadas durante a instação geral (bootstrap)*
+
+### Atualizações de pacotes instalados
+
+#### Atualizando pacotes que são instalados via pipx do python
+
+``` bash
+# caso queira saber quais são os pacotes instalados através do pipx
+pipx list
+
+# checar lista de pacotes desatualizados
+piplexed list --outdated
+
+# atualização sob demanda
+pipx upgrade nome_do_pacote
+
+# atualização de todos
+pipx upgrade-all
+```
+
 ## Troubleshooting
 
 ### Fontes não aparecendo
