@@ -70,7 +70,7 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 
 ### Arquivos do diretório `~/dotfiles`
 
-Neste arquivo residem os arquivos de configuração linkados aos seus respectivos paths corretos.
+Neste diretório residem os arquivos de configuração linkados aos seus respectivos paths corretos.
 
 Lembre que, por serem links, suas modificações podem ser feita de maneira bidirecional (origem ou destino do link). Mas opte por trabalhar como faria normalmente, fazendo modificações dentro de seus paths 'naturais', que são os **destinos** dos links:
 
