@@ -135,13 +135,6 @@ pipx upgrade-all
 
 ## Troubleshooting
 
-### Fontes não aparecendo
-
-1. Verifique se as fontes estão em /usr/share/fonts
-2. Execute: fc-cache -fv
-
-### Problemas com lsp do neovim ou node e npm não executáveis através do shell do zsh, apenas pelo bash
-
 O [NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install) faz uma [bagucinha quando encontra bash e zsh](https://github.com/nvm-sh/nvm?tab=readme-ov-file#troubleshooting-on-macos) no mesmo ambiente.
 
 1. recorte (copie e delete) o bloco do NVM presente no final do arquivo `~/.bashrc`
