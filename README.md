@@ -1,4 +1,4 @@
-# Dotfiles - Ambiente Dev Automatizado
+# Dotfiles - Ambiente Dev Automatizado e Sincronizado
 
 ![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
 ![Neovim](https://img.shields.io/badge/NeoVim-%2357A143.svg?style=for-the-badge&logo=neovim&logoColor=white)
@@ -54,8 +54,6 @@ chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
 
-Todas as configurações podem ser editadas após instalação nos respectivos diretórios.
-
 ## Componentes Instalados
 
 | Ferramenta       | Descrição                          |
@@ -68,11 +66,11 @@ Todas as configurações podem ser editadas após instalação nos respectivos d
 
 ## Informações
 
-### Arquivos do diretório `~/dotfiles`
+### `~/dotfiles`
 
 Neste diretório residem os arquivos de configuração linkados aos seus respectivos paths corretos.
 
-Lembre que, por serem links, suas modificações podem ser feita de maneira bidirecional (origem ou destino do link). Mas opte por trabalhar como faria normalmente, fazendo modificações dentro de seus paths 'naturais', que são os **destinos** dos links:
+Lembre que, por serem links, suas modificações podem ser feita de maneira bidirecional (origem ou destino do link). Mas você vai optar por trabalhar como faria normalmente, fazendo modificações dentro de seus paths 'naturais', que são os **destinos** dos links:
 
 | **Origem**                       | **Destino \[x\]**               | **Descrição**                  |
 |----------------------------------|---------------------------|--------------------------------|
