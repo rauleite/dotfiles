@@ -1,3 +1,12 @@
+# BEGIN UNIFY_HISTORIES_ZSH_TOP
+# Unifica history --------------------------
+# Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
+HISTFILE=~/.history
+# ajuda a forçar 
+export HIST_STAMPS=""
+# ------- ------- --------------------------
+# END UNIFY_HISTORIES_ZSH_TOP
+# setopt inc_append_history  # Equivalente a 'history -n; history -a'
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -75,6 +84,10 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+#
+#
+#
+#
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
@@ -116,3 +129,23 @@ export NVM_DIR="$HOME/.config/nvm"
 
 # Created by `pipx` on 2025-06-05 12:40:52
 export PATH="$PATH:/home/ubuntu/.local/bin"
+
+
+# HISTSIZE=10000
+# SAVEHIST=10000
+# setopt HIST_IGNORE_SPACE     # Ignora comandos com espaço no início
+# setopt HIST_NO_STORE         # Não grava comandos 'history'
+
+# BEGIN UNIFY_HISTORIES_ZSH_BOTTOM
+# Unifica history --------------------------
+
+unsetopt extendedhistory   # Garante que o Zsh grave sem timestamps extra
+unsetopt extended_history     # Desativa o registro de timestamps
+unsetopt EXTENDED_HISTORY
+
+setopt appendhistory       # Para que o shell adicione comandos ao final do arquivo
+setopt inc_append_history  # Equivalente a 'history -n; history -a'
+
+export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
+# ------- ------- --------------------------
+# END UNIFY_HISTORIES_ZSH_BOTTOM

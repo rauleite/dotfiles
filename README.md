@@ -108,6 +108,13 @@ ansible-playbook setup.yml --tags neovim_bin
 ```bash
 ansible-playbook setup.yml --tags pipx_packages
 ```
+#### Histórico de comandos (`history`) unificado (entre *bash* e *zsh*)
+
+Compartilhamento de histórico entre sessões das distintas shells: bin e zsh. Centralizado no arquivo *~/.history*
+
+```bash
+ansible-playbook setup.yml --tags unify_histories
+```
 
 *No entanto, todas as tasks (com ou sem *tags*) já são executadas durante a instação geral (bootstrap)*
 
