@@ -23,6 +23,7 @@
       - fontconfig # pelo 'fc-cache'
       - fd-find # usado pelo telescope
       - ripgrep # usado pelo telescope
+      - flatpak # utilizado por packages como o Unison
       - zsh
 
   tasks:
