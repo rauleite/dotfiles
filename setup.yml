@@ -26,30 +26,6 @@
       - zsh
 
   tasks:
-    # - name: Adicionar configuração ao ~/.profile
-    #   ansible.builtin.lineinfile:
-    #     path: ~/.profile
-    #     insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
-    #     line: 'if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH"; fi'
-    #     state: present
-    #     create: yes
-    #
-    # - name: Adicionar source ~/.profile ao ~/.zprofile
-    #   ansible.builtin.lineinfile:
-    #     path: ~/.zprofile
-    #     insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
-    #     line: "source ~/.profile"
-    #     state: present
-    #     create: yes
-    #
-    # - name: Inserir bloco de comentário em ~/.profile para variáveis compartilhadas
-    #   ansible.builtin.blockinfile:
-    #     path: "{{ ansible_env.HOME }}/.profile"
-    #     marker: "# {mark} INÍCIO: Variáveis compartilhadas"
-    #     block: |
-    #       # Adicione abaixo as variáveis de ambiente que serão utilizadas
-    #       # tanto nas sessões do bash quanto no zsh.
-
     - name: Instalar pacotes do sistema
       become: yes
       apt:
@@ -72,118 +48,7 @@
           when: item not in pipx_list.stdout
       tags:
         - pipx_packages
-    # --------------------------------------------------------------------
-
-    # - name: Backup e linkar arquivos de configuração
-    #   block:
-    #     - name: Verificar se os arquivos já existem
-    #       ansible.builtin.stat:
-    #         path: "{{ ansible_env.HOME }}/{{ item }}"
-    #       register: config_files_stat
-    #       loop:
-    #         - .zshrc
-    #         - .tmux.conf
-    #
-    #     - name: Fazer backup dos arquivos existentes (cria .bak com data/hora)
-    #       ansible.builtin.command: >
-    #         mv "{{ ansible_env.HOME }}/{{ item }}"
-    #         "{{ ansible_env.HOME }}/{{ item }}.{{ ansible_date_time.iso8601_basic }}.bak"
-    #       when: config_files_stat.results[loop.index0].stat.exists
-    #       loop:
-    #         - .zshrc
-    #         - .tmux.conf
-    #
-    #     - name: Linkar arquivos de configuração dos dotfiles
-    #       ansible.builtin.file:
-    #         src: "{{ dotfiles_dir }}/{{ item }}/{{ item }}"
-    #         dest: "{{ ansible_env.HOME }}/{{ item }}"
-    #         state: link
-    #         force: yes
-    #       loop:
-    #         - zsh/.zshrc
-    #         - tmux/.tmux.conf
-    #   tags:
-    #     - dotfiles
-
-    # - name: Backup e linkar .zshrc
-    #   block:
-    #     - name: Verificar se ~/.zshrc já existe
-    #       ansible.builtin.stat:
-    #         path: "{{ ansible_env.HOME }}/.zshrc"
-    #       register: zshrc_stat
-    #
-    #     - name: Fazer backup do .zshrc existente (cria .bak com data/hora)
-    #       ansible.builtin.command: >
-    #         mv "{{ ansible_env.HOME }}/.zshrc"
-    #         "{{ ansible_env.HOME }}/.zshrc.{{ ansible_date_time.iso8601_basic }}.bak"
-    #       when: zshrc_stat.stat.exists
-    #
-    #     - name: Linkar .zshrc dos dotfiles
-    #       ansible.builtin.file:
-    #         src: "{{ dotfiles_dir }}/zsh/.zshrc"
-    #         dest: "{{ ansible_env.HOME }}/.zshrc"
-    #         state: link
-    #         force: yes
-    #
-    # - name: Backup e linkar .tmux.conf
-    #   block:
-    #     - name: Verificar se ~/.tmux.conf já existe
-    #       ansible.builtin.stat:
-    #         path: "{{ ansible_env.HOME }}/.tmux.conf"
-    #       register: tmux_conf_stat
-    #
-    #     - name: Fazer backup do .tmux.conf existente (cria .bak com data/hora)
-    #       ansible.builtin.command: >
-    #         mv "{{ ansible_env.HOME }}/.tmux.conf"
-    #         "{{ ansible_env.HOME }}/.tmux.conf.{{ ansible_date_time.iso8601_basic }}.bak"
-    #       when: tmux_conf_stat.stat.exists
-    #
-    #     - name: Linkar a configuração do Tmux dos dotfiles
-    #       ansible.builtin.file:
-    #         src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-    #         dest: "{{ ansible_env.HOME }}/.tmux.conf"
-    #         state: link
-    #         force: yes
-
-    # - name: Linkar .zshrc
-    #   file:
-    #     src: "{{ dotfiles_dir }}/zsh/.zshrc"
-    #     dest: "~/.zshrc"
-    #     state: link
-    #     force: yes
-    #
-    # - name: Linkar configuração do Tmux
-    #   file:
-    #     src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-    #     dest: "~/.tmux.conf"
-    #     state: link
-    #     force: yes
-
-
-    # Links ----------------------------------
-    - name: Linkar .zshrc
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.zshrc"
-        dest: "~/.zshrc"
-        state: link
-        force: yes
-
-    - name: Linkar .p10k
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
-        dest: "~/.p10k.zsh"
-        state: link
-        force: yes
-      tags:
-            - p10k_install
-
-    - name: Linkar configuração do Tmux
-      file:
-        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-        dest: "~/.tmux.conf"
-        state: link
-        force: yes
-    # -----------------------------------------
+    # ----------------------------------------
 
     - name: "Configurar ambiente compartilhado para Bash e Zsh"
       tags:
@@ -241,6 +106,31 @@
       when: not omz_installed.stat.exists
       args:
         executable: /bin/zsh
+
+    # Links ----------------------------------
+    - name: Linkar .zshrc
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.zshrc"
+        dest: "~/.zshrc"
+        state: link
+        force: yes
+
+    - name: Linkar .p10k
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
+        dest: "~/.p10k.zsh"
+        state: link
+        force: yes
+      tags:
+            - p10k_install
+
+    - name: Linkar configuração do Tmux
+      file:
+        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+        dest: "~/.tmux.conf"
+        state: link
+        force: yes
+    # -----------------------------------------
 
     - name: Criar diretório de fontes
       file:
