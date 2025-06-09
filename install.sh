@@ -1,7 +1,7 @@
 #!/bin/bash
 # install.sh - Instalação automática dos dotfiles
 
-set -e  # Sai imediatamente se algum comando falhar
+# set -e  # Sai imediatamente se algum comando falhar
 
 echo "▶️  Iniciando instalação dos dotfiles..."
 
