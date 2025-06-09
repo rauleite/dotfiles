@@ -1,7 +1,7 @@
 # BEGIN UNIFY_HISTORIES_ZSH_TOP
 # Unifica history --------------------------
 # Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
-HISTFILE=~/.history
+# HISTFILE=~/.history
 # ajuda a forçar 
 export HIST_STAMPS=""
 # ------- ------- --------------------------
@@ -145,3 +145,8 @@ setopt inc_append_history  # Equivalente a 'history -n; history -a'
 export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
 # ------- ------- --------------------------
 # END UNIFY_HISTORIES_ZSH_BOTTOM
+# BEGIN ANSIBLE: Load shared environment
+if [ -f "$HOME/.bash_zsh_rc" ]; then
+    . "$HOME/.bash_zsh_rc"
+fi
+# END ANSIBLE: Load shared environment

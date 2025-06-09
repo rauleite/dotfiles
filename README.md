@@ -5,7 +5,9 @@
 ![tmux](https://img.shields.io/badge/tmux-1BB91F?style=for-the-badge&logo=tmux&logoColor=white)
 ![Zsh](https://img.shields.io/badge/zsh-%2320232a.svg?style=for-the-badge&logo=gnu-bash&logoColor=white)
 
-Configuração completa de ambiente de desenvolvimento com apenas um comando.
+## Configuração completa de ambiente de desenvolvimento com apenas um comando.
+
+Um ambiente de desenvolvimento versionado, flexível e automatizado. Com suporte intercambiável entre Zsh e Bash, permite alternância sem comprometer configurações ou fluxos de trabalho. O sistema de bootstrap automatizado aplica pré-configurações generalistas, baseadas em boas práticas iniciais para qualquer projeto, garantindo um setup mínimo eficiente. No entanto, o desenvolvedor mantém total liberdade para expandir e personalizar o ambiente conforme suas próprias necessidades, evoluindo sobre uma base sólida e bem estruturada. 🚀
 
 *Embora seja um mero bootstrap pós-instalação do SO, ele é baseado em meus requisitos essenciais míminos, portanto, é opnativo, sendo o SO o Ubuntu e suas ferramentas que considero básicas.*
 
@@ -19,18 +21,6 @@ dotfiles/
 ├── bootstrap.sh   # Instalador automático
 └── setup.yml      # Receita Ansible
 ```
-
-Essa estrutura oferece modularidade, organização e fácil manutenção para suas configurações de ambiente. Aqui estão as principais vantagens:
-
-✅ **Submódulos para projetos independentes `(nvim/)`:** Permite gerenciar a configuração do Neovim separadamente, facilitando atualizações sem interferir nos outros dotfiles.
-
-✅ **Separação clara por ferramenta `(tmux/, zsh/)`:** Cada configuração tem seu próprio diretório, tornando fácil modificar e versionar individualmente.
-
-✅ **Automação eficiente `(bootstrap.sh, setup.yml)`:** O script bootstrap.sh pode ser usado para instalações rápidas, enquanto setup.yml (Ansible) facilita configurações declarativas.
-
-✅ **Facilidade de backup e migração:** Como tudo está versionado, você pode clonar o repositório e restaurar o ambiente em segundos.
-
-Isso torna o fluxo de trabalho mais organizado, portátil e escalável 🚀😃 
 
 ## Instalação
 
@@ -79,10 +69,11 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 | `~/dotfiles/nvim`                | `~/.config/nvim`          | Configuração do Neovim         |
 | `~/dotfiles/tmux/.tmux.conf`     | `~/.tmux.conf`            | Configuração do Tmux           |
 
-### Shell e variáveis de ambiente
+### Shell e variáveis de ambiente compartilhadas
 
-- o `~/.profile` é o local ideal para você incluir as configurações **tanto do bash, quanto do *zsh***.
-- o `~/.bashrc` continua sendo específico para *bash*, e o `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
+- `~/.bash_zsh_rc` é o local ideal para você incluir as configurações (**tanto do bash, quanto do *zsh***).
+- `~/.bashrc` (e o `~/.profile`) continua sendo específico para *bash*
+- `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
 
 ### Instalações e configurações sob demanda
 

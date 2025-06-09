@@ -26,29 +26,29 @@
       - zsh
 
   tasks:
-    - name: Adicionar configuração ao ~/.profile
-      ansible.builtin.lineinfile:
-        path: ~/.profile
-        insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
-        line: 'if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH"; fi'
-        state: present
-        create: yes
-
-    - name: Adicionar source ~/.profile ao ~/.zprofile
-      ansible.builtin.lineinfile:
-        path: ~/.zprofile
-        insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
-        line: "source ~/.profile"
-        state: present
-        create: yes
-
-    - name: Inserir bloco de comentário em ~/.profile para variáveis compartilhadas
-      ansible.builtin.blockinfile:
-        path: "{{ ansible_env.HOME }}/.profile"
-        marker: "# {mark} INÍCIO: Variáveis compartilhadas"
-        block: |
-          # Adicione abaixo as variáveis de ambiente que serão utilizadas
-          # tanto nas sessões do bash quanto no zsh.
+    # - name: Adicionar configuração ao ~/.profile
+    #   ansible.builtin.lineinfile:
+    #     path: ~/.profile
+    #     insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
+    #     line: 'if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH"; fi'
+    #     state: present
+    #     create: yes
+    #
+    # - name: Adicionar source ~/.profile ao ~/.zprofile
+    #   ansible.builtin.lineinfile:
+    #     path: ~/.zprofile
+    #     insertafter: EOF # Insere ao final do arquivo, sem marcador fixo
+    #     line: "source ~/.profile"
+    #     state: present
+    #     create: yes
+    #
+    # - name: Inserir bloco de comentário em ~/.profile para variáveis compartilhadas
+    #   ansible.builtin.blockinfile:
+    #     path: "{{ ansible_env.HOME }}/.profile"
+    #     marker: "# {mark} INÍCIO: Variáveis compartilhadas"
+    #     block: |
+    #       # Adicione abaixo as variáveis de ambiente que serão utilizadas
+    #       # tanto nas sessões do bash quanto no zsh.
 
     - name: Instalar pacotes do sistema
       become: yes
@@ -145,6 +145,52 @@
     #     state: link
     #     force: yes
 
+    - name: "Configurar ambiente compartilhado para Bash e Zsh"
+      tags:
+        - shared_shell
+      block:
+        - name: Verificar se o arquivo compartilhado ~/.bash_zsh_rc existe
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.bash_zsh_rc"
+          register: shared_env_file
+
+        - name: Criar arquivo ~/.bash_zsh_rc com HISTFILE se não existir
+          ansible.builtin.copy:
+            dest: "{{ ansible_env.HOME }}/.bash_zsh_rc"
+            content: "HISTFILE=~/.history\n"
+            mode: "0644"
+          when: not shared_env_file.stat.exists
+
+        - name: Garantir que ~/.bashrc e ~/.zshrc carreguem o arquivo compartilhado
+          ansible.builtin.blockinfile:
+            path: "{{ item }}"
+            marker: "# {mark} ANSIBLE: Load shared environment"
+            block: |
+              if [ -f "$HOME/.bash_zsh_rc" ]; then
+                  . "$HOME/.bash_zsh_rc"
+              fi
+          loop:
+            - "{{ ansible_env.HOME }}/.bashrc"
+            - "{{ ansible_env.HOME }}/.zshrc"
+
+        # - name: Garantir que ~/.bashrc carregue o arquivo compartilhado
+        #   ansible.builtin.blockinfile:
+        #     path: "{{ ansible_env.HOME }}/.bashrc"
+        #     marker: "# {mark} ANSIBLE: Load shared environment"
+        #     block: |
+        #       if [ -f "$HOME/.bash_zsh_rc" ]; then
+        #           . "$HOME/.bash_zsh_rc"
+        #       fi
+        #
+        # - name: Garantir que ~/.zshrc carregue o arquivo compartilhado
+        #   ansible.builtin.blockinfile:
+        #     path: "{{ ansible_env.HOME }}/.zshrc"
+        #     marker: "# {mark} ANSIBLE: Load shared environment"
+        #     block: |
+        #       if [ -f "$HOME/.bash_zsh_rc" ]; then
+        #           . "$HOME/.bash_zsh_rc"
+        #       fi
+
     - name: Verificar se Oh My Zsh já está instalado
       stat:
         path: "~/.oh-my-zsh"
@@ -202,76 +248,79 @@
             force: no
 
     # Instalar binário do neovim -----------------
-    - name: Criar diretório de configuração do Neovim
-      file:
-        path: "~/.config/nvim"
-        state: directory
-
-    - name: Linkar configuração do Neovim
-      file:
-        src: "{{ dotfiles_dir }}/nvim"
-        dest: "~/.config/nvim"
-        state: link
-        force: yes # Permite substituir um arquivo/diretório existente pelo link
-
-    - block:
-        - name: Baixar Neovim
-          get_url:
-            url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-x86_64.tar.gz"
-            dest: "/tmp/nvim-linux-x86_64.tar.gz"
-            mode: "0644"
-          # tags:
-          #   - neovim_bin
-
-        - name: Extrair Neovim
-          unarchive:
-            src: "/tmp/nvim-linux-x86_64.tar.gz"
-            dest: "/tmp"
-            remote_src: yes
-          # tags:
-          #   - neovim_bin
-
-        - name: Remover instalação anterior do Neovim
-          become: yes
-          file:
-            path: "/usr/local/nvim"
-            state: absent
-          # tags:
-          #   - neovim_bin
-
-        - name: Mover Neovim para diretório de instalação
-          become: yes
-          command: mv /tmp/nvim-linux-x86_64 /usr/local/nvim
-          args:
-            creates: /usr/local/nvim
-          # tags:
-          #   - neovim_bin
-
-        - name: Criar link simbólico para o Neovim
-          become: yes
-          file:
-            src: "/usr/local/nvim/bin/nvim"
-            dest: "/usr/local/bin/nvim"
-            state: link
-            force: yes
-          # tags:
-          #   - neovim_bin
-
-        - name: Remover arquivo baixado do Neovim
-          become: yes
-          file:
-            path: "/tmp/nvim-linux-x86_64.tar.gz"
-            state: absent
-          # tags:
-          #   - neovim_bin
+    - name: Instalar binário do neovim
       tags: neovim_bin
-      # -----------------------------------------
+      block:
+        - name: Criar diretório de configuração do Neovim
+          file:
+            path: "~/.config/nvim"
+            state: directory
+
+        - name: Linkar configuração do Neovim
+          file:
+            src: "{{ dotfiles_dir }}/nvim"
+            dest: "~/.config/nvim"
+            state: link
+            force: yes # Permite substituir um arquivo/diretório existente pelo link
+
+        - block:
+            - name: Baixar Neovim
+              get_url:
+                url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-x86_64.tar.gz"
+                dest: "/tmp/nvim-linux-x86_64.tar.gz"
+                mode: "0644"
+              # tags:
+              #   - neovim_bin
+
+            - name: Extrair Neovim
+              unarchive:
+                src: "/tmp/nvim-linux-x86_64.tar.gz"
+                dest: "/tmp"
+                remote_src: yes
+              # tags:
+              #   - neovim_bin
+
+            - name: Remover instalação anterior do Neovim
+              become: yes
+              file:
+                path: "/usr/local/nvim"
+                state: absent
+              # tags:
+              #   - neovim_bin
+
+            - name: Mover Neovim para diretório de instalação
+              become: yes
+              command: mv /tmp/nvim-linux-x86_64 /usr/local/nvim
+              args:
+                creates: /usr/local/nvim
+              # tags:
+              #   - neovim_bin
+
+            - name: Criar link simbólico para o Neovim
+              become: yes
+              file:
+                src: "/usr/local/nvim/bin/nvim"
+                dest: "/usr/local/bin/nvim"
+                state: link
+                force: yes
+              # tags:
+              #   - neovim_bin
+
+            - name: Remover arquivo baixado do Neovim
+              become: yes
+              file:
+                path: "/tmp/nvim-linux-x86_64.tar.gz"
+                state: absent
+              # tags:
+              #   - neovim_bin
+          # tags: neovim_bin
+          # -----------------------------------------
 
     - block:
         - name: Instalar NVM
           # shell: curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh" | bash
           ansible.builtin.shell: >
-             bash --rcfile ~/.profile -c "curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash"
+            bash --rcfile ~/.profile -c "curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash"
           args:
             # executable: /bin/zsh
             executable: /bin/bash
