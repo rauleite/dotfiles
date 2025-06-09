@@ -126,25 +126,11 @@ source $ZSH/oh-my-zsh.sh
 # Created by `pipx` on 2025-06-05 12:40:52
 export PATH="$PATH:/home/ubuntu/.local/bin"
 
-
 # HISTSIZE=10000
 # SAVEHIST=10000
 # setopt HIST_IGNORE_SPACE     # Ignora comandos com espaço no início
 # setopt HIST_NO_STORE         # Não grava comandos 'history'
 
-# BEGIN UNIFY_HISTORIES_ZSH_BOTTOM
-# Unifica history --------------------------
-
-unsetopt extendedhistory   # Garante que o Zsh grave sem timestamps extra
-unsetopt extended_history     # Desativa o registro de timestamps
-unsetopt EXTENDED_HISTORY
-
-setopt appendhistory       # Para que o shell adicione comandos ao final do arquivo
-setopt inc_append_history  # Equivalente a 'history -n; history -a'
-
-export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
-# ------- ------- --------------------------
-# END UNIFY_HISTORIES_ZSH_BOTTOM
 # BEGIN ANSIBLE: Load shared environment
 if [ -f "$HOME/.bash_zsh_rc" ]; then
     . "$HOME/.bash_zsh_rc"

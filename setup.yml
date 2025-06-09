@@ -57,7 +57,6 @@
         state: present
 
     # Instalando piplexed, atualizador de pacotes instalados via pipx ---
-
     - name: Instalar pacotes via pipx
       block:
         - name: Obter a lista de pacotes instalados via pipx
@@ -73,63 +72,78 @@
           when: item not in pipx_list.stdout
       tags:
         - pipx_packages
-        # - name: Obter a lista de pacotes instalados via pipx
-        #   shell: pipx list --short
-        #   register: pipx_list
-        #   changed_when: false
-        #   tags:
-        #     - pipx_packages
-        #
-        # - name: Instalar piplexed via pipx, se não estiver instalado
-        #   shell: pipx install piplexed
-        #   when: "'piplexed' not in pipx_list.stdout"
-        #   tags:
-        #     - pipx_packages
-
     # --------------------------------------------------------------------
 
-    # -----------------------
-    # TODO: criar um '.bak' do .zshrc e do .tmux.conf
-    # -----------------------
-    - name: Backup e linkar .zshrc
+    - name: Backup e linkar arquivos de configuração
       block:
-        - name: Verificar se ~/.zshrc já existe
+        - name: Verificar se os arquivos já existem
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.zshrc"
-          register: zshrc_stat
+            path: "{{ ansible_env.HOME }}/{{ item }}"
+          register: config_files_stat
+          loop:
+            - .zshrc
+            - .tmux.conf
 
-        - name: Fazer backup do .zshrc existente (cria .bak com data/hora)
+        - name: Fazer backup dos arquivos existentes (cria .bak com data/hora)
           ansible.builtin.command: >
-            mv "{{ ansible_env.HOME }}/.zshrc"
-            "{{ ansible_env.HOME }}/.zshrc.{{ ansible_date_time.iso8601_basic }}.bak"
-          when: zshrc_stat.stat.exists
+            mv "{{ ansible_env.HOME }}/{{ item }}"
+            "{{ ansible_env.HOME }}/{{ item }}.{{ ansible_date_time.iso8601_basic }}.bak"
+          when: config_files_stat.results[loop.index0].stat.exists
+          loop:
+            - .zshrc
+            - .tmux.conf
 
-        - name: Linkar .zshrc dos dotfiles
+        - name: Linkar arquivos de configuração dos dotfiles
           ansible.builtin.file:
-            src: "{{ dotfiles_dir }}/zsh/.zshrc"
-            dest: "{{ ansible_env.HOME }}/.zshrc"
+            src: "{{ dotfiles_dir }}/{{ item }}/{{ item }}"
+            dest: "{{ ansible_env.HOME }}/{{ item }}"
             state: link
             force: yes
+          loop:
+            - zsh/.zshrc
+            - tmux/.tmux.conf
+      tags:
+        - dotfiles
 
-    - name: Backup e linkar .tmux.conf
-      block:
-        - name: Verificar se ~/.tmux.conf já existe
-          ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.tmux.conf"
-          register: tmux_conf_stat
-
-        - name: Fazer backup do .tmux.conf existente (cria .bak com data/hora)
-          ansible.builtin.command: >
-            mv "{{ ansible_env.HOME }}/.tmux.conf"
-            "{{ ansible_env.HOME }}/.tmux.conf.{{ ansible_date_time.iso8601_basic }}.bak"
-          when: tmux_conf_stat.stat.exists
-
-        - name: Linkar a configuração do Tmux dos dotfiles
-          ansible.builtin.file:
-            src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-            dest: "{{ ansible_env.HOME }}/.tmux.conf"
-            state: link
-            force: yes
+    # - name: Backup e linkar .zshrc
+    #   block:
+    #     - name: Verificar se ~/.zshrc já existe
+    #       ansible.builtin.stat:
+    #         path: "{{ ansible_env.HOME }}/.zshrc"
+    #       register: zshrc_stat
+    #
+    #     - name: Fazer backup do .zshrc existente (cria .bak com data/hora)
+    #       ansible.builtin.command: >
+    #         mv "{{ ansible_env.HOME }}/.zshrc"
+    #         "{{ ansible_env.HOME }}/.zshrc.{{ ansible_date_time.iso8601_basic }}.bak"
+    #       when: zshrc_stat.stat.exists
+    #
+    #     - name: Linkar .zshrc dos dotfiles
+    #       ansible.builtin.file:
+    #         src: "{{ dotfiles_dir }}/zsh/.zshrc"
+    #         dest: "{{ ansible_env.HOME }}/.zshrc"
+    #         state: link
+    #         force: yes
+    #
+    # - name: Backup e linkar .tmux.conf
+    #   block:
+    #     - name: Verificar se ~/.tmux.conf já existe
+    #       ansible.builtin.stat:
+    #         path: "{{ ansible_env.HOME }}/.tmux.conf"
+    #       register: tmux_conf_stat
+    #
+    #     - name: Fazer backup do .tmux.conf existente (cria .bak com data/hora)
+    #       ansible.builtin.command: >
+    #         mv "{{ ansible_env.HOME }}/.tmux.conf"
+    #         "{{ ansible_env.HOME }}/.tmux.conf.{{ ansible_date_time.iso8601_basic }}.bak"
+    #       when: tmux_conf_stat.stat.exists
+    #
+    #     - name: Linkar a configuração do Tmux dos dotfiles
+    #       ansible.builtin.file:
+    #         src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+    #         dest: "{{ ansible_env.HOME }}/.tmux.conf"
+    #         state: link
+    #         force: yes
 
     # - name: Linkar .zshrc
     #   file:
@@ -371,7 +385,9 @@
       tags: tmux_conf
     # ------------------------------------------------------
     # Unify shell histories --------------------------------
-    - block:
+    - name: Unify shell histories
+      tags: unify_histories
+      block:
         - name: "Check if ~/.zsh_history exists"
           stat:
             path: "{{ ansible_env.HOME }}/.zsh_history"
@@ -445,7 +461,6 @@
             marker: "# {mark} UNIFY_HISTORIES_BASH"
             block: |
               # Unifica history --------------------------
-              export HISTFILE=~/.history
               shopt -s histappend        # Faz o Bash acrescentar comandos ao invés de sobrescrever
 
               # Grava a cada comando, para sincronizar e sempre que o bash é retomado, ele se atualiza com últimos histories
@@ -467,20 +482,18 @@
           # tags:
           #   - unify_histories
 
-        - name: "Insert Zsh history unification block (top) in ~/.zshrc"
-          blockinfile:
-            path: "{{ ansible_env.HOME }}/.zshrc"
-            marker: "# {mark} UNIFY_HISTORIES_ZSH_TOP"
-            block: |
-              # Unifica history --------------------------
-              # Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
-              HISTFILE=~/.history
-              # ajuda a forçar 
-              export HIST_STAMPS=""
-              # ------- ------- --------------------------
-            insertbefore: BOF
-          # tags:
-          #   - unify_histories
+        # - name: "Insert Zsh history unification block (top) in ~/.zshrc"
+        #   blockinfile:
+        #     path: "{{ ansible_env.HOME }}/.zshrc"
+        #     marker: "# {mark} UNIFY_HISTORIES_ZSH_TOP"
+        #     block: |
+        #       # Unifica history --------------------------
+        #       # Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
+        #       export HIST_STAMPS=""
+        #       # ------- ------- --------------------------
+        #     insertbefore: BOF
+        #   # tags:
+        #   #   - unify_histories
 
         - name: "Insert Zsh history unification block (bottom) in ~/.zshrc"
           blockinfile:
@@ -511,7 +524,6 @@
               Você pode removê-los se desejar.
           # tags:
           #   - unify_histories
-      tags: unify_histories
     # ------------------------------------------------------
 
     - name: Definir Zsh como shell padrão
