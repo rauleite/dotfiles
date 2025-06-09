@@ -74,36 +74,36 @@
         - pipx_packages
     # --------------------------------------------------------------------
 
-    - name: Backup e linkar arquivos de configuração
-      block:
-        - name: Verificar se os arquivos já existem
-          ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/{{ item }}"
-          register: config_files_stat
-          loop:
-            - .zshrc
-            - .tmux.conf
-
-        - name: Fazer backup dos arquivos existentes (cria .bak com data/hora)
-          ansible.builtin.command: >
-            mv "{{ ansible_env.HOME }}/{{ item }}"
-            "{{ ansible_env.HOME }}/{{ item }}.{{ ansible_date_time.iso8601_basic }}.bak"
-          when: config_files_stat.results[loop.index0].stat.exists
-          loop:
-            - .zshrc
-            - .tmux.conf
-
-        - name: Linkar arquivos de configuração dos dotfiles
-          ansible.builtin.file:
-            src: "{{ dotfiles_dir }}/{{ item }}/{{ item }}"
-            dest: "{{ ansible_env.HOME }}/{{ item }}"
-            state: link
-            force: yes
-          loop:
-            - zsh/.zshrc
-            - tmux/.tmux.conf
-      tags:
-        - dotfiles
+    # - name: Backup e linkar arquivos de configuração
+    #   block:
+    #     - name: Verificar se os arquivos já existem
+    #       ansible.builtin.stat:
+    #         path: "{{ ansible_env.HOME }}/{{ item }}"
+    #       register: config_files_stat
+    #       loop:
+    #         - .zshrc
+    #         - .tmux.conf
+    #
+    #     - name: Fazer backup dos arquivos existentes (cria .bak com data/hora)
+    #       ansible.builtin.command: >
+    #         mv "{{ ansible_env.HOME }}/{{ item }}"
+    #         "{{ ansible_env.HOME }}/{{ item }}.{{ ansible_date_time.iso8601_basic }}.bak"
+    #       when: config_files_stat.results[loop.index0].stat.exists
+    #       loop:
+    #         - .zshrc
+    #         - .tmux.conf
+    #
+    #     - name: Linkar arquivos de configuração dos dotfiles
+    #       ansible.builtin.file:
+    #         src: "{{ dotfiles_dir }}/{{ item }}/{{ item }}"
+    #         dest: "{{ ansible_env.HOME }}/{{ item }}"
+    #         state: link
+    #         force: yes
+    #       loop:
+    #         - zsh/.zshrc
+    #         - tmux/.tmux.conf
+    #   tags:
+    #     - dotfiles
 
     # - name: Backup e linkar .zshrc
     #   block:
@@ -158,6 +158,8 @@
     #     dest: "~/.tmux.conf"
     #     state: link
     #     force: yes
+
+
 
     - name: "Configurar ambiente compartilhado para Bash e Zsh"
       tags:
@@ -352,16 +354,32 @@
           tags:
             - node_npm_install
 
-        - name: Linkar .p10k
-          file:
-            src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
-            dest: "~/.p10k.zsh"
-            state: link
-            force: yes
-          tags:
-            - p10k_install
       tags: nvm_install
+    # ----------------------------------------
+    # Links ----------------------------------
+    - name: Linkar .zshrc
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.zshrc"
+        dest: "~/.zshrc"
+        state: link
+        force: yes
 
+    - name: Linkar .p10k
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
+        dest: "~/.p10k.zsh"
+        state: link
+        force: yes
+      tags:
+            - p10k_install
+
+    - name: Linkar configuração do Tmux
+      file:
+        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+        dest: "~/.tmux.conf"
+        state: link
+        force: yes
+    # -----------------------------------------
     # INSTALL TMUX PLUGINS ------------------------------
     - block:
         - name: Clonar o repositório TPM
