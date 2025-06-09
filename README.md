@@ -11,17 +11,6 @@ Um ambiente de desenvolvimento versionado, flexível e automatizado. Com suporte
 
 *Embora seja um mero bootstrap pós-instalação do SO, ele é baseado em meus requisitos essenciais míminos, portanto, é opnativo, sendo o SO o Ubuntu e suas ferramentas que considero básicas.*
 
-## Estrutura do Projeto
-
-```structure
-dotfiles/
-├── nvim/          # Config do Neovim (submódulo)
-├── tmux/          # Config do Tmux
-└── zsh/           # Config do Zsh
-├── bootstrap.sh   # Instalador automático
-└── setup.yml      # Receita Ansible
-```
-
 ## Instalação
 
 ### Instalação rápida
@@ -56,7 +45,13 @@ chmod +x bootstrap.sh
 
 ## Informações
 
-### `~/dotfiles`
+### Shell e variáveis de ambiente compartilhadas
+
+- `~/.bash_zsh_rc` é o local ideal para você incluir as configurações (**tanto do bash, quanto do *zsh***).
+- `~/.bashrc` (e o `~/.profile`) continua sendo específico para *bash*
+- `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
+
+### ~/dotfiles
 
 Neste diretório residem os arquivos de configuração linkados aos seus respectivos paths corretos.
 
@@ -68,12 +63,6 @@ Lembre que, por serem links, suas modificações podem ser feita de maneira bidi
 | `~/dotfiles/zsh/.zshrc`          | `~/.zshrc`                | Arquivo de configuração do Zsh |
 | `~/dotfiles/nvim`                | `~/.config/nvim`          | Configuração do Neovim         |
 | `~/dotfiles/tmux/.tmux.conf`     | `~/.tmux.conf`            | Configuração do Tmux           |
-
-### Shell e variáveis de ambiente compartilhadas
-
-- `~/.bash_zsh_rc` é o local ideal para você incluir as configurações (**tanto do bash, quanto do *zsh***).
-- `~/.bashrc` (e o `~/.profile`) continua sendo específico para *bash*
-- `~/.zshrc` (e o `~/.zprofile`) para *zsh*.
 
 ### Instalações e configurações sob demanda
 
