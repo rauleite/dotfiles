@@ -144,9 +144,8 @@ pipx upgrade-all
 
 O [NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#manual-install) faz uma [bagucinha quando encontra bash e zsh](https://github.com/nvm-sh/nvm?tab=readme-ov-file#troubleshooting-on-macos) no mesmo ambiente.
 
-1. recorte (copie e delete) o bloco do NVM presente no final do arquivo `~/.bashrc`
-2. copie esta referência (do ~/.bashrc) no seu `~/.profile`
-3. delete o bloco presente no `~/.zshrc`
+1. recorte (copie e delete) o bloco do NVM presente no final do arquivo `~/.bashrc` e/ou `~/.zshrc`
+2. cole no seu `~/.profile`
 
 ### Se um arquivo ou link for apagado [ou quebrado] acidentalmente do `~/dotfiles/`
 

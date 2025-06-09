@@ -42,6 +42,14 @@
         state: present
         create: yes
 
+    - name: Inserir bloco de comentário em ~/.profile para variáveis compartilhadas
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.profile"
+        marker: "# {mark} INÍCIO: Variáveis compartilhadas"
+        block: |
+          # Adicione abaixo as variáveis de ambiente que serão utilizadas
+          # tanto nas sessões do bash quanto no zsh.
+
     - name: Instalar pacotes do sistema
       become: yes
       apt:
@@ -50,36 +58,92 @@
 
     # Instalando piplexed, atualizador de pacotes instalados via pipx ---
 
-    - name: Obter a lista de pacotes instalados via pipx
-      shell: pipx list --short
-      register: pipx_list
-      changed_when: false
+    - name: Instalar pacotes via pipx
+      block:
+        - name: Obter a lista de pacotes instalados via pipx
+          shell: pipx list --short
+          register: pipx_list
+          changed_when: false
+
+        - name: Instalar pacotes pipx se não estiverem instalados
+          shell: pipx install {{ item }}
+          loop:
+            - piplexed
+            - tmuxp
+          when: item not in pipx_list.stdout
       tags:
         - pipx_packages
-
-    - name: Instalar pacotes pipx se não estiverem instalados
-      shell: pipx install {{ item }}
-      loop:
-        - piplexed
-        - tmuxp
-      when: item not in pipx_list.stdout
-      tags:
-        - pipx_packages
-
-    # - name: Obter a lista de pacotes instalados via pipx
-    #   shell: pipx list --short
-    #   register: pipx_list
-    #   changed_when: false
-    #   tags:
-    #     - pipx_packages
-    #
-    # - name: Instalar piplexed via pipx, se não estiver instalado
-    #   shell: pipx install piplexed
-    #   when: "'piplexed' not in pipx_list.stdout"
-    #   tags:
-    #     - pipx_packages
+        # - name: Obter a lista de pacotes instalados via pipx
+        #   shell: pipx list --short
+        #   register: pipx_list
+        #   changed_when: false
+        #   tags:
+        #     - pipx_packages
+        #
+        # - name: Instalar piplexed via pipx, se não estiver instalado
+        #   shell: pipx install piplexed
+        #   when: "'piplexed' not in pipx_list.stdout"
+        #   tags:
+        #     - pipx_packages
 
     # --------------------------------------------------------------------
+
+    # -----------------------
+    # TODO: criar um '.bak' do .zshrc e do .tmux.conf
+    # -----------------------
+    - name: Backup e linkar .zshrc
+      block:
+        - name: Verificar se ~/.zshrc já existe
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.zshrc"
+          register: zshrc_stat
+
+        - name: Fazer backup do .zshrc existente (cria .bak com data/hora)
+          ansible.builtin.command: >
+            mv "{{ ansible_env.HOME }}/.zshrc"
+            "{{ ansible_env.HOME }}/.zshrc.{{ ansible_date_time.iso8601_basic }}.bak"
+          when: zshrc_stat.stat.exists
+
+        - name: Linkar .zshrc dos dotfiles
+          ansible.builtin.file:
+            src: "{{ dotfiles_dir }}/zsh/.zshrc"
+            dest: "{{ ansible_env.HOME }}/.zshrc"
+            state: link
+            force: yes
+
+    - name: Backup e linkar .tmux.conf
+      block:
+        - name: Verificar se ~/.tmux.conf já existe
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.tmux.conf"
+          register: tmux_conf_stat
+
+        - name: Fazer backup do .tmux.conf existente (cria .bak com data/hora)
+          ansible.builtin.command: >
+            mv "{{ ansible_env.HOME }}/.tmux.conf"
+            "{{ ansible_env.HOME }}/.tmux.conf.{{ ansible_date_time.iso8601_basic }}.bak"
+          when: tmux_conf_stat.stat.exists
+
+        - name: Linkar a configuração do Tmux dos dotfiles
+          ansible.builtin.file:
+            src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+            dest: "{{ ansible_env.HOME }}/.tmux.conf"
+            state: link
+            force: yes
+
+    # - name: Linkar .zshrc
+    #   file:
+    #     src: "{{ dotfiles_dir }}/zsh/.zshrc"
+    #     dest: "~/.zshrc"
+    #     state: link
+    #     force: yes
+    #
+    # - name: Linkar configuração do Tmux
+    #   file:
+    #     src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+    #     dest: "~/.tmux.conf"
+    #     state: link
+    #     force: yes
 
     - name: Verificar se Oh My Zsh já está instalado
       stat:
@@ -138,87 +202,6 @@
             force: no
 
     # Instalar binário do neovim -----------------
-    - name: Baixar Neovim
-      get_url:
-        url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-x86_64.tar.gz"
-        dest: "/tmp/nvim-linux-x86_64.tar.gz"
-        mode: "0644"
-      tags:
-        - neovim_bin
-
-    - name: Extrair Neovim
-      unarchive:
-        src: "/tmp/nvim-linux-x86_64.tar.gz"
-        dest: "/tmp"
-        remote_src: yes
-      tags:
-        - neovim_bin
-
-    - name: Remover instalação anterior do Neovim
-      become: yes
-      file:
-        path: "/usr/local/nvim"
-        state: absent
-      tags:
-        - neovim_bin
-
-    - name: Mover Neovim para diretório de instalação
-      become: yes
-      command: mv /tmp/nvim-linux-x86_64 /usr/local/nvim
-      args:
-        creates: /usr/local/nvim
-      tags:
-        - neovim_bin
-
-    - name: Criar link simbólico para o Neovim
-      become: yes
-      file:
-        src: "/usr/local/nvim/bin/nvim"
-        dest: "/usr/local/bin/nvim"
-        state: link
-        force: yes
-      tags:
-        - neovim_bin
-
-    - name: Remover arquivo baixado do Neovim
-      become: yes
-      file:
-        path: "/tmp/nvim-linux-x86_64.tar.gz"
-        state: absent
-      tags:
-        - neovim_bin
-    # -----------------------------------------
-
-    - name: Instalar NVM
-      shell: curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh" | bash
-      args:
-        executable: /bin/zsh
-
-    - name: Carregar NVM e instalar Node.js LTS
-      shell: |
-        source ~/.nvm/nvm.sh
-        nvm install --lts
-        node --version
-        npm --version
-      args:
-        executable: /bin/zsh
-      register: node_install
-      changed_when: "'Already installed' not in node_install.stdout"
-
-    - name: Linkar .p10k
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
-        dest: "~/.p10k.zsh"
-        state: link
-        force: yes
-
-    - name: Linkar .zshrc
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.zshrc"
-        dest: "~/.zshrc"
-        state: link
-        force: yes
-
     - name: Criar diretório de configuração do Neovim
       file:
         path: "~/.config/nvim"
@@ -231,183 +214,255 @@
         state: link
         force: yes # Permite substituir um arquivo/diretório existente pelo link
 
-    - name: Linkar configuração do Tmux
-      file:
-        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-        dest: "~/.tmux.conf"
-        state: link
-        force: yes
+    - block:
+        - name: Baixar Neovim
+          get_url:
+            url: "https://github.com/neovim/neovim/releases/download/{{ neovim_version }}/nvim-linux-x86_64.tar.gz"
+            dest: "/tmp/nvim-linux-x86_64.tar.gz"
+            mode: "0644"
+          # tags:
+          #   - neovim_bin
+
+        - name: Extrair Neovim
+          unarchive:
+            src: "/tmp/nvim-linux-x86_64.tar.gz"
+            dest: "/tmp"
+            remote_src: yes
+          # tags:
+          #   - neovim_bin
+
+        - name: Remover instalação anterior do Neovim
+          become: yes
+          file:
+            path: "/usr/local/nvim"
+            state: absent
+          # tags:
+          #   - neovim_bin
+
+        - name: Mover Neovim para diretório de instalação
+          become: yes
+          command: mv /tmp/nvim-linux-x86_64 /usr/local/nvim
+          args:
+            creates: /usr/local/nvim
+          # tags:
+          #   - neovim_bin
+
+        - name: Criar link simbólico para o Neovim
+          become: yes
+          file:
+            src: "/usr/local/nvim/bin/nvim"
+            dest: "/usr/local/bin/nvim"
+            state: link
+            force: yes
+          # tags:
+          #   - neovim_bin
+
+        - name: Remover arquivo baixado do Neovim
+          become: yes
+          file:
+            path: "/tmp/nvim-linux-x86_64.tar.gz"
+            state: absent
+          # tags:
+          #   - neovim_bin
+      tags: neovim_bin
+      # -----------------------------------------
+
+    - block:
+        - name: Instalar NVM
+          # shell: curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh" | bash
+          ansible.builtin.shell: >
+             bash --rcfile ~/.profile -c "curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | bash"
+          args:
+            # executable: /bin/zsh
+            executable: /bin/bash
+
+        - name: Carregar NVM e instalar Node.js LTS
+          shell: |
+            source ~/.nvm/nvm.sh
+            nvm install --lts
+            node --version
+            npm --version
+          args:
+            executable: /bin/bash
+          register: node_install
+          changed_when: "'Already installed' not in node_install.stdout"
+          tags:
+            - node_npm_install
+
+        - name: Linkar .p10k
+          file:
+            src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
+            dest: "~/.p10k.zsh"
+            state: link
+            force: yes
+          tags:
+            - p10k_install
+      tags: nvm_install
 
     # INSTALL TMUX PLUGINS ------------------------------
-    - name: Clonar o repositório TPM
-      git:
-        repo: https://github.com/tmux-plugins/tpm.git
-        dest: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
-        version: master
-      tags:
-        - tmux_conf
+    - block:
+        - name: Clonar o repositório TPM
+          git:
+            repo: https://github.com/tmux-plugins/tpm.git
+            dest: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+            version: master
 
-    - name: Iniciar o servidor tmux (caso não esteja ativo)
-      command: tmux start-server
-      ignore_errors: yes
-      tags:
-        - tmux_conf
+        - name: Iniciar o servidor tmux (caso não esteja ativo)
+          command: tmux start-server
+          ignore_errors: yes
 
-    - name: Criar uma sessão tmux detached para instalação do TPM
-      command: tmux new-session -d -s tpm_install
-      tags:
-        - tmux_conf
+        - name: Criar uma sessão tmux detached para instalação do TPM
+          command: tmux new-session -d -s tpm_install
 
-    - name: Executar o script de instalação dos plugins do TPM
-      command: tmux run-shell "~/.tmux/plugins/tpm/scripts/install_plugins.sh"
-      tags:
-        - tmux_conf
+        - name: Executar o script de instalação dos plugins do TPM
+          command: tmux run-shell "~/.tmux/plugins/tpm/scripts/install_plugins.sh"
 
-    - name: Encerrar a sessão usada para a instalação
-      command: tmux kill-session -t tpm_install
-      tags:
-        - tmux_conf
+        - name: Encerrar a sessão usada para a instalação
+          command: tmux kill-session -t tpm_install
+      tags: tmux_conf
     # ------------------------------------------------------
     # Unify shell histories --------------------------------
-    - name: "Check if ~/.zsh_history exists"
-      stat:
-        path: "{{ ansible_env.HOME }}/.zsh_history"
-      register: zsh_history_stat
-      tags:
-        - unify_histories
+    - block:
+        - name: "Check if ~/.zsh_history exists"
+          stat:
+            path: "{{ ansible_env.HOME }}/.zsh_history"
+          register: zsh_history_stat
+          # tags:
+          #   - unify_histories
 
-    - name: "Backup ~/.zsh_history to ~/.zsh_history.bak"
-      copy:
-        src: "{{ ansible_env.HOME }}/.zsh_history"
-        dest: "{{ ansible_env.HOME }}/.zsh_history.bak"
-        remote_src: yes
-      when: zsh_history_stat.stat.exists
-      tags:
-        - unify_histories
+        - name: "Backup ~/.zsh_history to ~/.zsh_history.bak"
+          copy:
+            src: "{{ ansible_env.HOME }}/.zsh_history"
+            dest: "{{ ansible_env.HOME }}/.zsh_history.bak"
+            remote_src: yes
+          when: zsh_history_stat.stat.exists
+          # tags:
+          #   - unify_histories
 
-    - name: "Remove timestamps from ~/.zsh_history and copy to unified history"
-      shell: |
-        sed -E 's/^: [0-9]+:[0-9]+;//' "{{ ansible_env.HOME }}/.zsh_history" > "{{ unified_history }}"
-      when: zsh_history_stat.stat.exists
-      tags:
-        - unify_histories
+        - name: "Remove timestamps from ~/.zsh_history and copy to unified history"
+          shell: |
+            sed -E 's/^: [0-9]+:[0-9]+;//' "{{ ansible_env.HOME }}/.zsh_history" > "{{ unified_history }}"
+          when: zsh_history_stat.stat.exists
+          # tags:
+          #   - unify_histories
 
-    - name: "Remove original ~/.zsh_history"
-      file:
-        path: "{{ ansible_env.HOME }}/.zsh_history"
-        state: absent
-      when: zsh_history_stat.stat.exists
-      tags:
-        - unify_histories
+        - name: "Remove original ~/.zsh_history"
+          file:
+            path: "{{ ansible_env.HOME }}/.zsh_history"
+            state: absent
+          when: zsh_history_stat.stat.exists
+          # tags:
+          #   - unify_histories
 
-    - name: "Check if ~/.bash_history exists"
-      stat:
-        path: "{{ ansible_env.HOME }}/.bash_history"
-      register: bash_history_stat
-      tags:
-        - unify_histories
+        - name: "Check if ~/.bash_history exists"
+          stat:
+            path: "{{ ansible_env.HOME }}/.bash_history"
+          register: bash_history_stat
+          # tags:
+          #   - unify_histories
 
-    - name: "Backup ~/.bash_history to ~/.bash_history.bak"
-      copy:
-        src: "{{ ansible_env.HOME }}/.bash_history"
-        dest: "{{ ansible_env.HOME }}/.bash_history.bak"
-        remote_src: yes
-      when: bash_history_stat.stat.exists
-      tags:
-        - unify_histories
+        - name: "Backup ~/.bash_history to ~/.bash_history.bak"
+          copy:
+            src: "{{ ansible_env.HOME }}/.bash_history"
+            dest: "{{ ansible_env.HOME }}/.bash_history.bak"
+            remote_src: yes
+          when: bash_history_stat.stat.exists
+          # tags:
+          #   - unify_histories
 
-    - name: "Append ~/.bash_history content to unified history"
-      shell: |
-        # Se ~/.history não existir, criamos o arquivo com o conteúdo; caso contrário, apenas adicionamos
-        if [ -f "{{ unified_history }}" ]; then
-          cat "{{ ansible_env.HOME }}/.bash_history" >> "{{ unified_history }}"
-        else
-          cp "{{ ansible_env.HOME }}/.bash_history" "{{ unified_history }}"
-        fi
-      when: bash_history_stat.stat.exists
-      tags:
-        - unify_histories
+        - name: "Append ~/.bash_history content to unified history"
+          shell: |
+            # Se ~/.history não existir, criamos o arquivo com o conteúdo; caso contrário, apenas adicionamos
+            if [ -f "{{ unified_history }}" ]; then
+              cat "{{ ansible_env.HOME }}/.bash_history" >> "{{ unified_history }}"
+            else
+              cp "{{ ansible_env.HOME }}/.bash_history" "{{ unified_history }}"
+            fi
+          when: bash_history_stat.stat.exists
+          # tags:
+          #   - unify_histories
 
-    - name: "Remove original ~/.bash_history"
-      file:
-        path: "{{ ansible_env.HOME }}/.bash_history"
-        state: absent
-      when: bash_history_stat.stat.exists
-      tags:
-        - unify_histories
+        - name: "Remove original ~/.bash_history"
+          file:
+            path: "{{ ansible_env.HOME }}/.bash_history"
+            state: absent
+          when: bash_history_stat.stat.exists
+          # tags:
+          #   - unify_histories
 
-    - name: "Insert or update Bash history unification block in ~/.bashrc"
-      blockinfile:
-        path: "{{ ansible_env.HOME }}/.bashrc"
-        marker: "# {mark} UNIFY_HISTORIES_BASH"
-        block: |
-          # Unifica history --------------------------
-          export HISTFILE=~/.history
-          shopt -s histappend        # Faz o Bash acrescentar comandos ao invés de sobrescrever
+        - name: "Insert or update Bash history unification block in ~/.bashrc"
+          blockinfile:
+            path: "{{ ansible_env.HOME }}/.bashrc"
+            marker: "# {mark} UNIFY_HISTORIES_BASH"
+            block: |
+              # Unifica history --------------------------
+              export HISTFILE=~/.history
+              shopt -s histappend        # Faz o Bash acrescentar comandos ao invés de sobrescrever
 
-          # Grava a cada comando, para sincronizar e sempre que o bash é retomado, ele se atualiza com últimos histories
-          export PROMPT_COMMAND='history -n; history -a'
+              # Grava a cada comando, para sincronizar e sempre que o bash é retomado, ele se atualiza com últimos histories
+              export PROMPT_COMMAND='history -n; history -a'
 
-          # Sempre que o bash retoma, ele se atualiza com últimos histories
-          # export PROMPT_COMMAND='history -n'
+              # Sempre que o bash retoma, ele se atualiza com últimos histories
+              # export PROMPT_COMMAND='history -n'
 
-          # Substitui todos valores alfanuméricos, que são incompatíveis com o bash, se a sessão anterior não for bash (como zsh, ou sshd)
+              # Substitui todos valores alfanuméricos, que são incompatíveis com o bash, se a sessão anterior não for bash (como zsh, ou sshd)
 
-          # Obtém o nome do processo pai
-          parent_proc=$(ps -p $PPID -o comm= 2>/dev/null | tr -d ' ')
+              # Obtém o nome do processo pai
+              parent_proc=$(ps -p $PPID -o comm= 2>/dev/null | tr -d ' ')
 
-          # Se o processo pai não for "bash", executa o sed
-          if [ "$parent_proc" != "bash" ]; then
-            sed -E -i.bak 's/^: [0-9]+:[0-9]+;//' "$HOME/.history"
-          fi
-          # ------- ------- --------------------------
-      tags:
-        - unify_histories
+              # Se o processo pai não for "bash", executa o sed
+              if [ "$parent_proc" != "bash" ]; then
+                sed -E -i.bak 's/^: [0-9]+:[0-9]+;//' "$HOME/.history"
+              fi
+              # ------- ------- --------------------------
+          # tags:
+          #   - unify_histories
 
-    - name: "Insert Zsh history unification block (top) in ~/.zshrc"
-      blockinfile:
-        path: "{{ ansible_env.HOME }}/.zshrc"
-        marker: "# {mark} UNIFY_HISTORIES_ZSH_TOP"
-        block: |
-          # Unifica history --------------------------
-          # Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
-          HISTFILE=~/.history
-          # ajuda a forçar 
-          export HIST_STAMPS=""
-          # ------- ------- --------------------------
-        insertbefore: BOF
-      tags:
-        - unify_histories
+        - name: "Insert Zsh history unification block (top) in ~/.zshrc"
+          blockinfile:
+            path: "{{ ansible_env.HOME }}/.zshrc"
+            marker: "# {mark} UNIFY_HISTORIES_ZSH_TOP"
+            block: |
+              # Unifica history --------------------------
+              # Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
+              HISTFILE=~/.history
+              # ajuda a forçar 
+              export HIST_STAMPS=""
+              # ------- ------- --------------------------
+            insertbefore: BOF
+          # tags:
+          #   - unify_histories
 
-    - name: "Insert Zsh history unification block (bottom) in ~/.zshrc"
-      blockinfile:
-        path: "{{ ansible_env.HOME }}/.zshrc"
-        marker: "# {mark} UNIFY_HISTORIES_ZSH_BOTTOM"
-        block: |
-          # Unifica history --------------------------
+        - name: "Insert Zsh history unification block (bottom) in ~/.zshrc"
+          blockinfile:
+            path: "{{ ansible_env.HOME }}/.zshrc"
+            marker: "# {mark} UNIFY_HISTORIES_ZSH_BOTTOM"
+            block: |
+              # Unifica history --------------------------
 
-          unsetopt extendedhistory   # Garante que o Zsh grave sem timestamps extra
-          unsetopt extended_history     # Desativa o registro de timestamps
-          unsetopt EXTENDED_HISTORY
+              unsetopt extendedhistory   # Garante que o Zsh grave sem timestamps extra
+              unsetopt extended_history     # Desativa o registro de timestamps
+              unsetopt EXTENDED_HISTORY
 
-          setopt appendhistory       # Para que o shell adicione comandos ao final do arquivo
-          setopt inc_append_history  # Equivalente a 'history -n; history -a'
+              setopt appendhistory       # Para que o shell adicione comandos ao final do arquivo
+              setopt inc_append_history  # Equivalente a 'history -n; history -a'
 
-          export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
-          # ------- ------- --------------------------
-        insertafter: EOF
-      tags:
-        - unify_histories
+              export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
+              # ------- ------- --------------------------
+            insertafter: EOF
+          # tags:
+          #   - unify_histories
 
-    - name: "Notify user about backup files"
-      debug:
-        msg: >
-          Se os arquivos ~/.zsh_history ou ~/.bash_history existiam, backups foram criados em:
-          - {{ ansible_env.HOME }}/.zsh_history.bak
-          - {{ ansible_env.HOME }}/.bash_history.bak
-          Você pode removê-los se desejar.
-      tags:
-        - unify_histories
+        - name: "Notify user about backup files"
+          debug:
+            msg: >
+              Se os arquivos ~/.zsh_history ou ~/.bash_history existiam, backups foram criados em:
+              - {{ ansible_env.HOME }}/.zsh_history.bak
+              - {{ ansible_env.HOME }}/.bash_history.bak
+              Você pode removê-los se desejar.
+          # tags:
+          #   - unify_histories
+      tags: unify_histories
     # ------------------------------------------------------
 
     - name: Definir Zsh como shell padrão
