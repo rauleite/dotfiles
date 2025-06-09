@@ -50,6 +50,42 @@
         - pipx_packages
     # ----------------------------------------
 
+    - name: Verificar se Oh My Zsh já está instalado
+      stat:
+        path: "~/.oh-my-zsh"
+      register: omz_installed
+
+    - name: Instalar Oh My Zsh
+      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      when: not omz_installed.stat.exists
+      args:
+        executable: /bin/zsh
+
+    # Links ----------------------------------
+    - name: Linkar .zshrc
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.zshrc"
+        dest: "~/.zshrc"
+        state: link
+        force: yes
+
+    - name: Linkar .p10k
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
+        dest: "~/.p10k.zsh"
+        state: link
+        force: yes
+      tags:
+            - p10k_install
+
+    - name: Linkar configuração do Tmux
+      file:
+        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+        dest: "~/.tmux.conf"
+        state: link
+        force: yes
+    # -----------------------------------------
+
     - name: "Configurar ambiente compartilhado para Bash e Zsh"
       tags:
         - shared_shell
@@ -96,41 +132,6 @@
         #           . "$HOME/.bash_zsh_rc"
         #       fi
 
-    - name: Verificar se Oh My Zsh já está instalado
-      stat:
-        path: "~/.oh-my-zsh"
-      register: omz_installed
-
-    - name: Instalar Oh My Zsh
-      shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-      when: not omz_installed.stat.exists
-      args:
-        executable: /bin/zsh
-
-    # Links ----------------------------------
-    - name: Linkar .zshrc
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.zshrc"
-        dest: "~/.zshrc"
-        state: link
-        force: yes
-
-    - name: Linkar .p10k
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
-        dest: "~/.p10k.zsh"
-        state: link
-        force: yes
-      tags:
-            - p10k_install
-
-    - name: Linkar configuração do Tmux
-      file:
-        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-        dest: "~/.tmux.conf"
-        state: link
-        force: yes
-    # -----------------------------------------
 
     - name: Criar diretório de fontes
       file:
