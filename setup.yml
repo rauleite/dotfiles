@@ -160,6 +160,30 @@
     #     force: yes
 
 
+    # Links ----------------------------------
+    - name: Linkar .zshrc
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.zshrc"
+        dest: "~/.zshrc"
+        state: link
+        force: yes
+
+    - name: Linkar .p10k
+      file:
+        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
+        dest: "~/.p10k.zsh"
+        state: link
+        force: yes
+      tags:
+            - p10k_install
+
+    - name: Linkar configuração do Tmux
+      file:
+        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
+        dest: "~/.tmux.conf"
+        state: link
+        force: yes
+    # -----------------------------------------
 
     - name: "Configurar ambiente compartilhado para Bash e Zsh"
       tags:
@@ -356,30 +380,6 @@
 
       tags: nvm_install
     # ----------------------------------------
-    # Links ----------------------------------
-    - name: Linkar .zshrc
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.zshrc"
-        dest: "~/.zshrc"
-        state: link
-        force: yes
-
-    - name: Linkar .p10k
-      file:
-        src: "{{ dotfiles_dir }}/zsh/.p10k.zsh"
-        dest: "~/.p10k.zsh"
-        state: link
-        force: yes
-      tags:
-            - p10k_install
-
-    - name: Linkar configuração do Tmux
-      file:
-        src: "{{ dotfiles_dir }}/tmux/.tmux.conf"
-        dest: "~/.tmux.conf"
-        state: link
-        force: yes
-    # -----------------------------------------
     # INSTALL TMUX PLUGINS ------------------------------
     - block:
         - name: Clonar o repositório TPM
