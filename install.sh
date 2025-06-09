@@ -5,6 +5,9 @@ set -e  # Sai imediatamente se algum comando falhar
 
 echo "▶️  Iniciando instalação dos dotfiles..."
 
+sudo apt update && sudo apt upgrade -y
+sudo apt install git
+
 # Clone o repositório (se ainda não existir)
 if [ ! -d ~/dotfiles ]; then
   echo "⏬ Clonando repositório principal..."
