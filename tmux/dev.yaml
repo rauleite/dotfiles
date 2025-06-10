@@ -1,0 +1,17 @@
+session_name: ambiente_dev
+shell_command_before:
+  - echo "Iniciando ambiente de desenvolvimento..."
+  - cd ~/dotfiles
+windows:
+  - window_name: editor
+    # layout: tiled
+    layout: even-horizontal
+    panes:
+      - shell_command: nvim
+      - shell_command:
+          - echo "Abrindo painel de logs"
+          - tail -f /var/log/syslog
+  - window_name: navegador
+    layout: even-horizontal
+    panes:
+      - shell_command: firefox
