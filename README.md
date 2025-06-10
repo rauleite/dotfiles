@@ -45,6 +45,16 @@ chmod +x bootstrap.sh
 
 ## Informações
 
+*Tmux* funciona perfeitamente com *Neovim*, proporcionando uma experiência integrada.
+
+*Tmuxp* é um gerenciador de sessões que mantém a configuração do *tmux* do seu jeito, evitando trabalho repetitivo.
+
+Para testar, carregue um ambiente de desenvolvimento pré-configurado:
+
+```bash
+tmuxp load ~/dotfiles/tmux/dev.yaml
+```
+
 ### Shell e variáveis de ambiente compartilhadas
 
 - `~/.bash_zsh_rc` é o local ideal para você incluir as configurações (**tanto do bash, quanto do *zsh***).
