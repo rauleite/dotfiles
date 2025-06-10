@@ -26,6 +26,20 @@
       - zsh
 
   tasks:
+    - name: Definir condição para atualização
+      ansible.builtin.set_fact:
+        atualizar_sistema: "{{ is_updated is defined and is_updated | default('') | string | length > 0 and is_updated | int == 1 }}"
+
+    - name: Executar update do APT
+      ansible.builtin.apt:
+        update_cache: yes
+      when: atualizar_sistema
+
+    - name: Executar upgrade no Ubuntu
+      ansible.builtin.apt:
+        upgrade: yes
+      when: atualizar_sistema
+
     - name: Instalar pacotes do sistema
       become: yes
       apt:

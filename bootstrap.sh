@@ -1,10 +1,18 @@
 #!/bin/bash
 
 # Habilitar modo de erro para sair em caso de falhas
-set -e
+if [-z "$IS_UPDATED"] || [ "$IS_UPDATED" -eq 0]; then
+  echo "update do sistema operacional..."
+  sudo apt update
+  IS_UPDATED=1
+fi
 
-echo "update e upgrade do sistema operacional..."
-sudo apt update && sudo apt upgrade -y
+if [-z "$IS_UPGRADED"] || [ "$IS_UPGRADED" -eq 0]; then
+  echo "upgrade do sistema operacional..."
+  sudo apt upgrade -y
+  IS_UPGRADED=1
+fi
+
 # sudo apt install -y python3-full
 sudo apt install -y python3 python3-venv python3-pip
 
@@ -44,7 +52,7 @@ else
     ansible-playbook --version
 fi
 
-ansible-playbook -v setup.yml
+ansible-playbook -v setup.yml --extra-vars "is_upgraded=$IS_UPGRADED is_updated=$IS_UPDATED has_git=$HAS_GIT"
 
 # script -q -c "zsh -i -c 'p10k configure'"
 # zsh -i -c "source ~/.zshrc && p10k configure"

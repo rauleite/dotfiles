@@ -3,14 +3,18 @@
 
 # set -e  # Sai imediatamente se algum comando falhar
 
-echo "▶️  Iniciando instalação dos dotfiles..."
-
+echo "🔄 Atualizando ubuntu..."
 sudo apt update && sudo apt upgrade -y
+IS_UPDATED=1
+IS_UPGRADED=1
+
+echo "🔄 Instalando Git"
 sudo apt install git
+HAS_GIT=1
 
 # Clone o repositório (se ainda não existir)
 if [ ! -d ~/dotfiles ]; then
-  echo "⏬ Clonando repositório principal..."
+  echo "⏬ Clonando repositório 'dotfiles'..."
   git clone --recursive https://github.com/rauleite/dotfiles.git ~/dotfiles
 fi
 
@@ -26,7 +30,7 @@ git submodule foreach git checkout main
 # Executa o bootstrap
 echo "🚀 Executando configuração..."
 chmod +x bootstrap.sh
-# ./bootstrap.sh
+
 exec bash -i -c "./bootstrap.sh"
 
 echo "✅ Instalação concluída com sucesso!"
