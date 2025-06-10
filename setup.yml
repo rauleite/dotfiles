@@ -20,8 +20,8 @@
       # - git
       - xclip # para poder copiar para área de transfência do SO para o nvim e vice-versa
       - fontconfig # pelo 'fc-cache'
-      # - fd-find # usado pelo telescope
-      # - ripgrep # usado pelo telescope
+      - fd-find # usado pelo picker (snack) / ps. telescope também usava
+      - ripgrep # usado pelo picker (snack)
       - tmux
       - zsh
       - sqlite3
