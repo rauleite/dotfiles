@@ -33,11 +33,13 @@
     - name: Executar update do APT
       ansible.builtin.apt:
         update_cache: yes
+      become: yes
       when: atualizar_sistema
 
     - name: Executar upgrade no Ubuntu
       ansible.builtin.apt:
         upgrade: yes
+      become: yes
       when: atualizar_sistema
 
     - name: Instalar pacotes do sistema
