@@ -5,12 +5,12 @@
 
 echo "🔄 Atualizando ubuntu..."
 sudo apt update && sudo apt upgrade -y
-IS_UPDATED=1
-IS_UPGRADED=1
+export IS_UPDATED=1
+export IS_UPGRADED=1
 
 echo "🔄 Instalando Git"
 sudo apt install git
-HAS_GIT=1
+export HAS_GIT=1
 
 # Clone o repositório (se ainda não existir)
 if [ ! -d ~/dotfiles ]; then
