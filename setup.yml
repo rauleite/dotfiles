@@ -26,21 +26,30 @@
       - zsh
 
   tasks:
-    - name: Definir condição para atualização
-      ansible.builtin.set_fact:
-        atualizar_sistema: "{{ is_updated is defined and is_updated | default('') | string | length > 0 and is_updated | int == 1 }}"
+    # - name: Mostrar o valor de variáveis
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - "O valor de is_updated é: {{ is_updated }}"
+    #       - "O valor de has_git é: {{ has_git }}"
+    #       - "O valor de is_upgraded é: {{ is_upgraded }}"
+    #       - "Resultado da is_updated: {{ is_updated is defined and is_updated | default('') | string | length > 0 and is_updated | int == 1 }}"
+    #       - "Resultado da is_upgraded: {{ is_upgraded is defined and is_upgraded | default('') | string | length > 0 and is_upgraded | int == 1 }}"
+    #       - "Resultado da has_git: {{ has_git is defined and has_git | default('') | string | length > 0 and has_git | int == 1 }}"
 
     - name: Executar update do APT
       ansible.builtin.apt:
         update_cache: yes
       become: yes
-      when: atualizar_sistema
+      when: is_updated is not defined or is_updated | default('') | string | length == 0 or is_updated | int != 1
 
     - name: Executar upgrade no Ubuntu
       ansible.builtin.apt:
         upgrade: yes
       become: yes
-      when: atualizar_sistema
+      when: is_upgraded is not defined or is_upgraded | default('') | string | length == 0 or is_upgraded | int != 1
+
+    # - name: Finalizar execução
+    #   ansible.builtin.meta: end_play
 
     - name: Instalar pacotes do sistema
       become: yes
@@ -92,7 +101,7 @@
         state: link
         force: yes
       tags:
-            - p10k_install
+        - p10k_install
 
     - name: Linkar configuração do Tmux
       file:
@@ -147,7 +156,6 @@
         #       if [ -f "$HOME/.bash_zsh_rc" ]; then
         #           . "$HOME/.bash_zsh_rc"
         #       fi
-
 
     - name: Criar diretório de fontes
       file:
@@ -419,7 +427,6 @@
         #     insertbefore: BOF
         #   # tags:
         #   #   - unify_histories
-
         - name: "Insert Zsh history unification block (bottom) in ~/.zshrc"
           blockinfile:
             path: "{{ ansible_env.HOME }}/.zshrc"
