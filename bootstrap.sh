@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Habilitar modo de erro para sair em caso de falhas
-if [-z "$IS_UPDATED"] || [ "$IS_UPDATED" -eq 0]; then
+if [ -z "$IS_UPDATED" ] || [ "$IS_UPDATED" -eq 0 ]; then
   echo "update do sistema operacional..."
   sudo apt update
   IS_UPDATED=1
 fi
 
-if [-z "$IS_UPGRADED"] || [ "$IS_UPGRADED" -eq 0]; then
+if [ -z "$IS_UPGRADED" ] || [ "$IS_UPGRADED" -eq 0 ]; then
   echo "upgrade do sistema operacional..."
   sudo apt upgrade -y
   IS_UPGRADED=1
