@@ -2,7 +2,7 @@
 - name: Configurar ambiente de desenvolvimento
   hosts: localhost
   connection: local
-  # become: yes
+  become: no
   vars:
     nvm_version: "v0.40.3"
     neovim_version: "v0.11.2"
@@ -26,6 +26,7 @@
       - zsh
       - sqlite3
       - libsqlite3-dev
+      - luarocks
 
   tasks:
     # - name: Mostrar o valor de variáveis
@@ -141,23 +142,12 @@
             - "{{ ansible_env.HOME }}/.bashrc"
             - "{{ ansible_env.HOME }}/.zshrc"
 
-        # - name: Garantir que ~/.bashrc carregue o arquivo compartilhado
-        #   ansible.builtin.blockinfile:
-        #     path: "{{ ansible_env.HOME }}/.bashrc"
-        #     marker: "# {mark} ANSIBLE: Load shared environment"
-        #     block: |
-        #       if [ -f "$HOME/.bash_zsh_rc" ]; then
-        #           . "$HOME/.bash_zsh_rc"
-        #       fi
-        #
-        # - name: Garantir que ~/.zshrc carregue o arquivo compartilhado
-        #   ansible.builtin.blockinfile:
-        #     path: "{{ ansible_env.HOME }}/.zshrc"
-        #     marker: "# {mark} ANSIBLE: Load shared environment"
-        #     block: |
-        #       if [ -f "$HOME/.bash_zsh_rc" ]; then
-        #           . "$HOME/.bash_zsh_rc"
-        #       fi
+        - name: Adicionar variável XAUTHORITY ao ~/.bash_zsh_rc se não existir
+          ansible.builtin.lineinfile:
+            path: "{{ ansible_env.HOME }}/.bash_zsh_rc"
+            line: "export XAUTHORITY=~/.Xauthority"
+            state: present
+            regexp: "^export XAUTHORITY="
 
     - name: Criar diretório de fontes
       file:
