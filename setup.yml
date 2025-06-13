@@ -2,7 +2,7 @@
 - name: Configurar ambiente de desenvolvimento
   hosts: localhost
   connection: local
-  become: no
+  # become: yes
   vars:
     nvm_version: "v0.40.3"
     neovim_version: "v0.11.2"
@@ -43,6 +43,8 @@
       ansible.builtin.apt:
         update_cache: yes
       become: yes
+      become_user: root
+      become_method: sudo
       when: is_updated is not defined or is_updated | default('') | string | length == 0 or is_updated | int != 1
 
     - name: Executar upgrade no Ubuntu
