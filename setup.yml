@@ -149,6 +149,13 @@
             state: present
             regexp: "^export XAUTHORITY="
 
+        # deslinka a implementação do oh-my-zsh do link, que não faz o parse correto
+        - name: Adicionar 'unalias history' ao ~/.bash_zsh_rc se não existir
+          ansible.builtin.lineinfile:
+            path: "{{ ansible_env.HOME }}/.bash_zsh_rc"
+            line: "unalias history"
+            regexp: "^unalias history"
+
     - name: Criar diretório de fontes
       file:
         path: "{{ font_dir }}"
