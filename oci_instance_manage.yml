@@ -22,51 +22,40 @@
     availability_domain: "FzDv:SA-SAOPAULO-1-AD-1"
   tasks:
     - name: Listar instâncias existentes no compartimento
-      # oracle.oci.oci_compute_instance_info:
       oracle.oci.oci_compute_instance_facts:
         config_file_location: "{{ config_file }}"
         config_profile_name: "{{ profile }}"
         compartment_id: "{{ compartment_id }}"
       register: instances_info
       tags:
-        - "listar"
-        - "excluir"
+        - listar
+        - excluir
 
     - name: Exibir instâncias encontradas (display_name e OCID)
       debug:
         msg: "{{ instances_info.instances | map(attribute='display_name') | zip(instances_info.instances | map(attribute='id')) | list }}"
       tags:
-        - "listar"
-        - "excluir"
+        - listar
+        - excluir
 
-    - name: Solicitar o nome da instância a ser excluída
+    - name: Informar o OCID da instância a ser excluída (sem aspas)
       pause:
-        prompt: "Digite o nome da instância a ser excluída (escolha entre: {{ instances_info.instances | map(attribute='display_name') | join(', ') }})"
-      register: display_input
-      tags: "excluir"
+        prompt: "Digite o OCID da instância a ser excluída"
+      register: instance_ocid_input
+      tags:
+        - excluir
 
-    - name: Filtrar a instância com o display_name informado
+    - name: Definir o instance_id com base no input do usuário
       set_fact:
-        selected_instance: "{{ instances_info.instances | selectattr('display_name', 'equalto', display_input.user_input) | list | first }}"
-      tags: "excluir"
-
-    - name: Verificar se a instância foi encontrada
-      assert:
-        that:
-          - selected_instance is defined
-          - selected_instance is not none
-        fail_msg: "Nenhuma instância com o display_name informado foi encontrada. Abortando."
-      tags: "excluir"
-
-    - name: Definir o instance_id com base no display_name selecionado
-      set_fact:
-        instance_id: "{{ selected_instance.id }}"
-      tags: "excluir"
+        instance_id: "{{ instance_ocid_input.user_input }}"
+      tags:
+        - excluir
 
     - name: Exibir o instance_id que será utilizado para exclusão
       debug:
         msg: "A instância a ser excluída possui o OCID: {{ instance_id }}"
-      tags: "excluir"
+      tags:
+        - excluir
 
     - name: Excluir a instância selecionada
       oracle.oci.oci_compute_instance:
@@ -74,74 +63,63 @@
         config_profile_name: "{{ profile }}"
         state: absent
         instance_id: "{{ instance_id }}"
-      tags: "excluir"
+        preserve_boot_volume: no
+      tags:
+        - excluir
 
-    # - name: Criar nova instância OCI
-    #   oracle.oci.oci_compute_instance:
-    #     config_file_location: "{{ config_file }}"
-    #     config_profile_name: "{{ profile }}"
-    #     state: present
-    #     compartment_id: "{{ compartment_id }}"
-    #     display_name: "{{ display_name }}"
-    #     shape: "{{ shape }}"
-    #     image_id: "{{ image_id }}"
-    #     subnet_id: "{{ subnet_id }}"
-    #   register: nova_instancia
-    #   tags: "criar"
-
-    # - name: Criar nova instância OCI
-    #   oracle.oci.oci_compute_instance:
-    #     config_file_location: "{{ config_file }}"
-    #     config_profile_name: "{{ profile }}"
-    #     state: present
-    #     compartment_id: "{{ compartment_id }}"
-    #     display_name: "{{ display_name }}"
-    #     shape: "{{ shape }}"
-    #     availability_domain: "{{ availability_domain }}"
-    #     source_details:
-    #       source_type: "image"
-    #       image_id: "{{ image_id }}"
-    #     subnet_id: "{{ subnet_id }}"
-    #   register: nova_instancia
-    #   tags: "criar"
-
-    - name: Solicitar o nome da instância a ser criada (se não fornecido via extra-vars)
+    # ------------------------------------------------
+    - name: Criar instância
+      tags: criar
       block:
-        - name: Entrar com o nome da instância
+        - name: Solicitar o nome da instância a ser criada
+          block:
+            - name: Entrar com o nome da instância
+              pause:
+                prompt: "Digite o nome da instância a ser criada"
+              register: input_display
+            - name: Definir display_name a partir da entrada do usuário
+              set_fact:
+                display_name: "{{ input_display.user_input }}"
+          when: display_name is not defined or display_name == ""
+
+        - name: Perguntar ao usuário o caminho da chave pública SSH
           pause:
-            prompt: "Digite o nome da instância a ser criada: "
-          register: input_display
-        - name: Definir display_name a partir da entrada do usuário
+            prompt: "Digite o caminho onde se localiza a sua chave pública SSH (padrão: ~/.ssh/id_ed25519.pub)"
+          register: ssh_key_input
+
+        - name: Definir variável para chave SSH
           set_fact:
-            display_name: "{{ input_display.user_input }}"
-      when: display_name is not defined or display_name == ""
-      tags:
-        - criar
+            # ssh_key_path: "{{ ssh_key_input.user_input | default(lookup('env', 'HOME') + '/.ssh/id_ed25519.pub') }}"
+            ssh_key_path: "{{ ssh_key_input.user_input | default(lookup('env', 'HOME') ~ '/.ssh/id_ed25519.pub', true) }}"
 
-    - name: Exibir o nome da instância que será criada (para debug)
-      debug:
-        msg: "Usando o nome da instância: {{ display_name }}"
-      tags:
-        - criar
+        - name: Nome da instância
+          debug:
+            msg: "{{ display_name }}"
 
-    - name: Criar nova instância OCI
-      oracle.oci.oci_compute_instance:
-        config_file_location: "{{ config_file }}"
-        config_profile_name: "{{ profile }}"
-        state: present
-        compartment_id: "{{ compartment_id }}"
-        display_name: "{{ display_name }}"
-        shape: "{{ shape }}"
-        availability_domain: "{{ availability_domain }}"
-        source_details:
-          source_type: "image"
-          image_id: "{{ image_id }}"
-        subnet_id: "{{ subnet_id }}"
-      register: nova_instancia
-      tags:
-        - criar
+        - name: Local da chave privada
+          debug:
+            msg: "{{ ssh_key_path }}"
 
-    - name: Exibir detalhes da nova instância
-      debug:
-        var: nova_instancia
-      tags: "criar"
+        - name: Criar nova instância OCI
+          oracle.oci.oci_compute_instance:
+            config_file_location: "{{ config_file }}"
+            config_profile_name: "{{ profile }}"
+            state: present
+            compartment_id: "{{ compartment_id }}"
+            display_name: "{{ display_name }}"
+            shape: "{{ shape }}"
+            availability_domain: "{{ availability_domain }}"
+            source_details:
+              source_type: "image"
+              image_id: "{{ image_id }}"
+            subnet_id: "{{ subnet_id }}"
+            metadata:
+              ssh_authorized_keys: "{{ lookup('file', ssh_key_path) }}"
+              # ssh_authorized_keys: "{{ lookup('env','HOME') + 'ssh_key_path' }}"
+              # ssh_authorized_keys: "{{ lookup('file', ssh_key_path) }}"
+          register: nova_instancia
+
+        - name: Exibir detalhes da nova instância
+          debug:
+            var: nova_instancia
+    # ------------------------------------------------
