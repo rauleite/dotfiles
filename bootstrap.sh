@@ -48,6 +48,7 @@ fi
 # export PATH="$HOME/.local/bin:$PATH"
 
 export PATH="$PATH:~/.venvs/pipx_venv/bin"
+export PATH="$HOME/.local/bin:$PATH"
 pipx ensurepath
 
 # Executa o comando `source` no arquivo correto
