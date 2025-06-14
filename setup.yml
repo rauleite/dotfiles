@@ -9,6 +9,7 @@
     dotfiles_dir: "{{ ansible_user_dir }}/dotfiles"
     font_dir: "/usr/share/fonts"
     unified_history: "{{ ansible_env.HOME }}/.history"
+    pipx_path: "{{ ansible_env.HOME }}/.venvs/pipx_venv/bin"
     powerlevel10k_fonts:
       "MesloLGS NF Regular.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf"
       "MesloLGS NF Bold.ttf": "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf"
@@ -62,22 +63,24 @@
         name: "{{ system_packages }}"
         state: present
 
-    # Instalando piplexed, atualizador de pacotes instalados via pipx ---
+    # ----------------------------------------
+    # Instalando piplexed, atualizador de pacotes instalados via pipx
     - name: Instalar pacotes via pipx
+      tags: pipx_packages
       block:
         - name: Obter a lista de pacotes instalados via pipx
-          shell: pipx list --short
+          ansible.builtin.command:
+            cmd: "{{ pipx_path }}/pipx list --short"
           register: pipx_list
           changed_when: false
 
         - name: Instalar pacotes pipx se não estiverem instalados
-          shell: pipx install {{ item }}
+          ansible.builtin.command:
+            cmd: "{{ pipx_path }}/pipx install {{ item }}"
           loop:
             - piplexed
             - tmuxp
           when: item not in pipx_list.stdout
-      tags:
-        - pipx_packages
     # ----------------------------------------
 
     - name: Verificar se Oh My Zsh já está instalado
@@ -150,6 +153,13 @@
             line: "export XAUTHORITY=~/.Xauthority"
             state: present
             regexp: "^export XAUTHORITY="
+
+        - name: Adicionar pipx ao PATH em ~/.bash_zsh_rc se não existir
+          ansible.builtin.lineinfile:
+            path: "{{ ansible_env.HOME }}/.bash_zsh_rc"
+            line: 'export PATH="$PATH:{{ pipx_path }}"'
+            state: present
+            regexp: "^export PATH=.*{{ pipx_path }}"
 
         # deslinka a implementação do oh-my-zsh do link, que não faz o parse correto
         - name: Adicionar 'unalias history' ao ~/.bash_zsh_rc se não existir

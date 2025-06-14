@@ -1,0 +1,110 @@
+---
+- name: Excluir e recriar instância OCI
+  hosts: localhost
+  connection: local
+  collections:
+    - oracle.oci
+  vars:
+    # Define o caminho do arquivo de configuração da OCI.
+    config_file: "{{ lookup('env','HOME') + '/.oci/config' }}"
+    profile: DEFAULT
+
+    # Variáveis para a criação da instância:
+    compartment_id: "ocid1.tenancy.oc1..aaaaaaaaz7uk3wkn677lp5u5esw76tcogwy3les5fulelf2h7hya74icjola"
+    display_name: "InstanciaAlwaysFree"
+    shape: "VM.Standard.E2.1.Micro" # Geralmente o shape da always free
+    # image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaakjohycxtogead7pigb7isau535wv5ge66cowirigqtyuvx4h6yva" # Ex: Ubuntu LTS
+    #"ocid1.image.oc1.sa-saopaulo-1.aaaaaaaaauivm4ncxj2ompvenq6kvdm4cf2r2jh2siqng4u6du5v5qmg32lq"
+    image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaaauivm4ncxj2ompvenq6kvdm4cf2r2jh2siqng4u6du5v5qmg32lq"
+    subnet_id: "ocid1.subnet.oc1.sa-saopaulo-1.aaaaaaaa25iq462rmvklxfj367l4irvjag22d2r2mn57xrqntp4cm3icf6pa"
+    # subnet_id: "ocid1.vcn.oc1.sa-saopaulo-1.amaaaaaaj5yni5yaj2srxlvoxhpw62acv4qojmqp4snzx3zppftoorb2smca"
+    availability_domain: "FzDv:SA-SAOPAULO-1-AD-1"
+  tasks:
+    - name: Listar instâncias existentes no compartimento
+      # oracle.oci.oci_compute_instance_info:
+      oracle.oci.oci_compute_instance_facts:
+        config_file_location: "{{ config_file }}"
+        config_profile_name: "{{ profile }}"
+        compartment_id: "{{ compartment_id }}"
+      register: instances_info
+      tags:
+        - "listar"
+        - "excluir"
+
+    - name: Exibir instâncias encontradas (display_name e OCID)
+      debug:
+        msg: "{{ instances_info.instances | map(attribute='display_name') | zip(instances_info.instances | map(attribute='id')) | list }}"
+      tags:
+        - "listar"
+        - "excluir"
+
+    - name: Solicitar o nome da instância a ser excluída
+      pause:
+        prompt: "Digite o nome da instância a ser excluída (escolha entre: {{ instances_info.instances | map(attribute='display_name') | join(', ') }})"
+      register: display_input
+      tags: "excluir"
+
+    - name: Filtrar a instância com o display_name informado
+      set_fact:
+        selected_instance: "{{ instances_info.instances | selectattr('display_name', 'equalto', display_input.user_input) | list | first }}"
+      tags: "excluir"
+
+    - name: Verificar se a instância foi encontrada
+      assert:
+        that:
+          - selected_instance is defined
+          - selected_instance is not none
+        fail_msg: "Nenhuma instância com o display_name informado foi encontrada. Abortando."
+      tags: "excluir"
+
+    - name: Definir o instance_id com base no display_name selecionado
+      set_fact:
+        instance_id: "{{ selected_instance.id }}"
+      tags: "excluir"
+
+    - name: Exibir o instance_id que será utilizado para exclusão
+      debug:
+        msg: "A instância a ser excluída possui o OCID: {{ instance_id }}"
+      tags: "excluir"
+
+    - name: Excluir a instância selecionada
+      oracle.oci.oci_compute_instance:
+        config_file_location: "{{ config_file }}"
+        config_profile_name: "{{ profile }}"
+        state: absent
+        instance_id: "{{ instance_id }}"
+      tags: "excluir"
+
+    # - name: Criar nova instância OCI
+    #   oracle.oci.oci_compute_instance:
+    #     config_file_location: "{{ config_file }}"
+    #     config_profile_name: "{{ profile }}"
+    #     state: present
+    #     compartment_id: "{{ compartment_id }}"
+    #     display_name: "{{ display_name }}"
+    #     shape: "{{ shape }}"
+    #     image_id: "{{ image_id }}"
+    #     subnet_id: "{{ subnet_id }}"
+    #   register: nova_instancia
+    #   tags: "criar"
+
+    - name: Criar nova instância OCI
+      oracle.oci.oci_compute_instance:
+        config_file_location: "{{ config_file }}"
+        config_profile_name: "{{ profile }}"
+        state: present
+        compartment_id: "{{ compartment_id }}"
+        display_name: "{{ display_name }}"
+        shape: "{{ shape }}"
+        availability_domain: "{{ availability_domain }}"
+        source_details:
+          source_type: "image"
+          image_id: "{{ image_id }}"
+        subnet_id: "{{ subnet_id }}"
+      register: nova_instancia
+      tags: "criar"
+
+    - name: Exibir detalhes da nova instância
+      debug:
+        var: nova_instancia
+      tags: "criar"

@@ -45,6 +45,8 @@ chmod +x bootstrap.sh
 
 ## Informações
 
+O projeto dotfiles é modular e inteligente, procura fazer com que todas as instalações e configurações se adaptem ao sistema, sem recriar o que já existe. Pode ser executado quantas vezes necessário, sem duplicações ou sobrescritas desnecessárias. Sempre que uma alteração for realmente necessária, uma cópia de segurança (.bak) é criada automaticamente.
+
 *Tmux* funciona perfeitamente com *Neovim*, proporcionando uma experiência integrada.
 
 *Tmuxp* é um gerenciador de sessões que mantém a configuração do *tmux* do seu jeito, evitando trabalho repetitivo.
