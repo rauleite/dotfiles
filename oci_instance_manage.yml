@@ -16,7 +16,8 @@
     shape: "VM.Standard.E2.1.Micro" # Geralmente o shape da always free
     # image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaakjohycxtogead7pigb7isau535wv5ge66cowirigqtyuvx4h6yva" # Ex: Ubuntu LTS
     #"ocid1.image.oc1.sa-saopaulo-1.aaaaaaaaauivm4ncxj2ompvenq6kvdm4cf2r2jh2siqng4u6du5v5qmg32lq"
-    image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaaauivm4ncxj2ompvenq6kvdm4cf2r2jh2siqng4u6du5v5qmg32lq"
+    image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaadwxporzjrx24ul2gub5fsoqgaekd6uxwurpqsvzpwcqutyovzk2a"
+    # image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaaauivm4ncxj2ompvenq6kvdm4cf2r2jh2siqng4u6du5v5qmg32lq"
     subnet_id: "ocid1.subnet.oc1.sa-saopaulo-1.aaaaaaaa25iq462rmvklxfj367l4irvjag22d2r2mn57xrqntp4cm3icf6pa"
     # subnet_id: "ocid1.vcn.oc1.sa-saopaulo-1.amaaaaaaj5yni5yaj2srxlvoxhpw62acv4qojmqp4snzx3zppftoorb2smca"
     availability_domain: "FzDv:SA-SAOPAULO-1-AD-1"
