@@ -2,6 +2,7 @@
 - name: Excluir e recriar instância OCI
   hosts: localhost
   connection: local
+  gather_facts: no
   collections:
     - oracle.oci
   vars:
@@ -11,7 +12,7 @@
 
     # Variáveis para a criação da instância:
     compartment_id: "ocid1.tenancy.oc1..aaaaaaaaz7uk3wkn677lp5u5esw76tcogwy3les5fulelf2h7hya74icjola"
-    display_name: "InstanciaAlwaysFree"
+    # display_name: "InstanciaAlwaysFree"
     shape: "VM.Standard.E2.1.Micro" # Geralmente o shape da always free
     # image_id: "ocid1.image.oc1.sa-saopaulo-1.aaaaaaaakjohycxtogead7pigb7isau535wv5ge66cowirigqtyuvx4h6yva" # Ex: Ubuntu LTS
     #"ocid1.image.oc1.sa-saopaulo-1.aaaaaaaaauivm4ncxj2ompvenq6kvdm4cf2r2jh2siqng4u6du5v5qmg32lq"
@@ -88,6 +89,41 @@
     #   register: nova_instancia
     #   tags: "criar"
 
+    # - name: Criar nova instância OCI
+    #   oracle.oci.oci_compute_instance:
+    #     config_file_location: "{{ config_file }}"
+    #     config_profile_name: "{{ profile }}"
+    #     state: present
+    #     compartment_id: "{{ compartment_id }}"
+    #     display_name: "{{ display_name }}"
+    #     shape: "{{ shape }}"
+    #     availability_domain: "{{ availability_domain }}"
+    #     source_details:
+    #       source_type: "image"
+    #       image_id: "{{ image_id }}"
+    #     subnet_id: "{{ subnet_id }}"
+    #   register: nova_instancia
+    #   tags: "criar"
+
+    - name: Solicitar o nome da instância a ser criada (se não fornecido via extra-vars)
+      block:
+        - name: Entrar com o nome da instância
+          pause:
+            prompt: "Digite o nome da instância a ser criada: "
+          register: input_display
+        - name: Definir display_name a partir da entrada do usuário
+          set_fact:
+            display_name: "{{ input_display.user_input }}"
+      when: display_name is not defined or display_name == ""
+      tags:
+        - criar
+
+    - name: Exibir o nome da instância que será criada (para debug)
+      debug:
+        msg: "Usando o nome da instância: {{ display_name }}"
+      tags:
+        - criar
+
     - name: Criar nova instância OCI
       oracle.oci.oci_compute_instance:
         config_file_location: "{{ config_file }}"
@@ -102,7 +138,8 @@
           image_id: "{{ image_id }}"
         subnet_id: "{{ subnet_id }}"
       register: nova_instancia
-      tags: "criar"
+      tags:
+        - criar
 
     - name: Exibir detalhes da nova instância
       debug:
