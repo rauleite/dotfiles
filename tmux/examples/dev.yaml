@@ -7,6 +7,7 @@ windows:
     panes:
       # Se for usar o caminho completo, não pode usar atalhos como $HOME ou ~/
       - shell_command: "bash ~/dotfiles/tmux/examples/layout.sh"
-  - window_name: navegador
+  - window_name: web
     panes:
-      - shell_command: firefox
+      # - shell_command: firefox
+      - shell_command: "echo 'abre firefox'"
