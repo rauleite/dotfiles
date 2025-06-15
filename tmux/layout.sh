@@ -2,7 +2,7 @@
 # ATENÇÃO: DEIXAR NO MESMO DIRETÓRIO DA CONFIGURAÇÃO DO TMUXP
 # (ou mudar o diretório dentro do arquivo de configuração - yaml no caso)
 # Seleciona a janela "editor" da sessão "ambiente_dev"
-tmux select-window -t ambiente_dev:editor
+tmux select-window -t dev:edit
 # sleep 0.2
 
 # 1. Dividir horizontalmente: cria o painel à direita ocupando 50% da largura.
