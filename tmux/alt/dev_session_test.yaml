@@ -1,0 +1,22 @@
+# Gerado com a opção freeze do comando tmuxp - com alguns ajustes
+session_name: dev
+shell_command_before:
+  - cd ~/dotfiles
+windows:
+  - focus: "true"
+    layout: 11de,157x42,0,0{78x42,0,0[78x20,0,0,1,78x21,0,21,4],78x42,79,0,3}
+    options: {}
+    panes:
+      - nvim .
+      - focus: "true"
+        shell_command: tail -f /var/log/syslog
+      - zsh
+    # start_directory: .
+    window_name: editor
+  - layout: bb3f,157x43,0,0,2
+    options: {}
+    panes:
+      - focus: "true"
+        shell_command: zsh
+    # start_directory: ~/dotfiles
+    window_name: navegador

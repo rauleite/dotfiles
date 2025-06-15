@@ -1,0 +1,13 @@
+# custom_plugin.py
+from tmuxp.plugin import TmuxpPlugin
+
+class CustomAfterWindowFinished(TmuxpPlugin):
+    def after_window_finished(self, window):
+        # Divide horizontalmente o único painel para criar o painel à direita com 50% da largura.
+        window.cmd("split-window", "-h", "-l", "50%", "zsh")
+        # Seleciona o painel esquerdo.
+        window.select_pane(0)
+        # Divide verticalmente o painel esquerdo para criar dois painéis (um acima e outro abaixo)
+        window.cmd("split-window", "-v", "-l", "50%", "tail -f /var/log/syslog")
+        # Envia comando para o painel superior (esquerdo) para iniciar o nvim
+        window.cmd("send-keys", "-t", "0", "nvim .", "Enter")
