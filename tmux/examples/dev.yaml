@@ -1,12 +1,12 @@
 session_name: dev
 shell_command_before:
-  - cd ~/dev/projects/
+  - cd ~/dev/projetos/
 windows:
   - window_name: edit
     # Começamos com apenas um painel que inicia o zsh
     panes:
       # Se for usar o caminho completo, não pode usar atalhos como $HOME ou ~/
-      - shell_command: "bash ~/dotfiles/tmux/layout.sh"
+      - shell_command: "bash ~/dotfiles/tmux/examples/layout.sh"
   - window_name: navegador
     panes:
       - shell_command: firefox

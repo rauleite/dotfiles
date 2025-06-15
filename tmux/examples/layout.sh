@@ -1,7 +1,10 @@
 #!/bin/bash
-# ATENÇÃO: DEIXAR NO MESMO DIRETÓRIO DA CONFIGURAÇÃO DO TMUXP
-# (ou mudar o diretório dentro do arquivo de configuração - yaml no caso)
-# Seleciona a janela "editor" da sessão "ambiente_dev"
+#
+# # # # # # #
+# ATENÇÃO: o local dessa configuração, definido em './dev.yaml, é '~/dotfiles/tmux/examples/layout.sh'
+# # # # # # #
+#
+# Seleciona a janela "edit" da sessão "dev"
 tmux select-window -t dev:edit
 # sleep 0.2
 
