@@ -28,6 +28,7 @@
       - sqlite3
       - libsqlite3-dev
       - luarocks
+      - fzf
 
   tasks:
     # - name: Mostrar o valor de variáveis
