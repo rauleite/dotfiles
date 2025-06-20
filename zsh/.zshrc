@@ -3,7 +3,7 @@
 # Definindo HIST_STAMPS como vazio para evitar que um formato seja aplicado pelo oh-my-zsh
 # HISTFILE=~/.history
 # ajuda a forçar 
-export HIST_STAMPS=""
+# export HIST_STAMPS=""
 # ------- ------- --------------------------
 # END UNIFY_HISTORIES_ZSH_TOP
 # setopt inc_append_history  # Equivalente a 'history -n; history -a'
@@ -143,13 +143,13 @@ export NVM_DIR="$HOME/.nvm"
 # BEGIN UNIFY_HISTORIES_ZSH_BOTTOM
 # Unifica history --------------------------
 
-unsetopt extendedhistory   # Garante que o Zsh grave sem timestamps extra
-unsetopt extended_history     # Desativa o registro de timestamps
-unsetopt EXTENDED_HISTORY
-
-setopt appendhistory       # Para que o shell adicione comandos ao final do arquivo
-setopt inc_append_history  # Equivalente a 'history -n; history -a'
-
-export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
-# ------- ------- --------------------------
-# END UNIFY_HISTORIES_ZSH_BOTTOM
+# unsetopt extendedhistory   # Garante que o Zsh grave sem timestamps extra
+# unsetopt extended_history     # Desativa o registro de timestamps
+# unsetopt EXTENDED_HISTORY
+#
+# setopt appendhistory       # Para que o shell adicione comandos ao final do arquivo
+# setopt inc_append_history  # Equivalente a 'history -n; history -a'
+#
+# export HIST_STAMPS=""           # Garante que nenhuma formatação de timestamp seja aplicada
+# # ------- ------- --------------------------
+# # END UNIFY_HISTORIES_ZSH_BOTTOM
